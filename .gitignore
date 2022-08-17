@@ -2,7 +2,6 @@
 *.lm
 zig-cache
 scratchpad
-docs/
 debug/
 release/
 zig-out/
