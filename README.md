@@ -12,7 +12,7 @@ for(text in list) {
 }
 ```
 
-You can find more examples in the [examples](examples/lola) folder.
+You can find more examples in the [examples](examples/lux) folder.
 
 ## Why Lux when there is *X*?
 Lux isn't meant to be your next best day-to-day scripting language. Its design is focused on embedding the language in environments where the users want/need/should write some small scripts like games or scriptable applications. In most script languages, you as a script host don't have control over the execution time of the scripts you're executing. Lux protects you against programming errors like endless loops and such:
@@ -83,7 +83,7 @@ With a fitting network stack and library, this can even be utilized cross-comput
 This example implements a small chat client and server that could work with Lux RPC capabilities:
 ```js
 // Chat client implementation:
-var server = Connect("lola-rpc://random-projects.net/chat");
+var server = Connect("lux-rpc://random-projects.net/chat");
 if(server == void) {
 	Print("Could not connect to chat server!");
 	Exit(1);
@@ -177,11 +177,11 @@ Note that this is a fairly new feature, it does not catch all your type mismatch
 To get familiar with Lux, you can check out these starting points:
 
 - [Documentation](documentation/README.md)
-- [Lux Examples](examples/lola/README.md)
+- [Lux Examples](examples/lux/README.md)
 - [Script Host Examples](examples/host)
 
 ## Visual Studio Code Extension
-If you want syntax highlighting in VSCode, you can install the [`lola-vscode`](https://github.com/MasterQ32/lola-vscode) extension.
+If you want syntax highlighting in VSCode, you can install the [`lux-vscode`](https://github.com/tomhansen992/lux-vscode) extension.
 
 Right now, it's not published in the gallery, so to install the extension, you have to sideload it. [See the VSCode documentation for this](https://vscode-docs.readthedocs.io/en/stable/extensions/install-
 
@@ -189,7 +189,7 @@ Right now, it's not published in the gallery, so to install the extension, you h
 
 ```sh
 zig build
-./zig-cache/bin/lola
+./zig-cache/bin/lux
 ```
 
 ### Examples
@@ -208,11 +208,4 @@ This will execute all zig tests, and also runs a set of predefined tests within 
 
 ### Building the website
 
-The website generator is gated behind `-Denable-website` which removes a lot of dependencies for people not wanting to render a new version of the website.
-If you still want to update/change the website or documentation, use the following command:
-
-```sh
-zig build
-```
-
-It will depend on [koino](https://github.com/kivikakk/koino), which is included as a git submodule. Adding new pages to the documentation is done by modifying the `menu_items` array in `src/tools/render-md-page.zig`.
+Compiled at build. Adding new pages to the documentation is done by modifying the `menu_items` array in `src/tools/render-md-page.zig`.
