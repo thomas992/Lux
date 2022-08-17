@@ -244,7 +244,7 @@ pub fn build(b: *Builder) !void {
     /////////////////////////////////////////////////////////////////////////
     // Documentation and Website generation:
     // this is disabed by-default so we don't depend on any vcpkgs
-    if (b.option(bool, "enable-website", "Enables website generation.") orelse false) {
+    // if (b.option(bool, "enable-website", "Enables website generation.") orelse false) {
         // Generates documentation and future files.
         const gen_website_step = b.step("website", "Generates the website and all required resources.");
 
@@ -260,7 +260,7 @@ pub fn build(b: *Builder) !void {
             "cp",
         });
         copy_wasm_runtime.addArtifactArg(wasm_runtime);
-        copy_wasm_runtime.addArg("website/lola.wasm");
+        copy_wasm_runtime.addArg("website/lux.wasm");
         gen_website_step.dependOn(&copy_wasm_runtime.step);
 
         var gen_docs_runner = b.addTest(pkgs.lola.source.path);
@@ -279,5 +279,5 @@ pub fn build(b: *Builder) !void {
         // Only generates documentation
         const gen_docs_step = b.step("docs", "Generate the code documentation");
         gen_docs_step.dependOn(&gen_docs_runner.step);
-    }
+    //}
 }
