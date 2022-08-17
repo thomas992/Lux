@@ -1,6 +1,6 @@
-# LoLa Intermedia Language
+# Lux Intermedia Language
 
-This document describes all available instructions of the Lola intermediate language as well as it's encoding in a binary stream.
+This document describes all available instructions of the Lux intermediate language as well as it's encoding in a binary stream.
 
 ## Instructions
 

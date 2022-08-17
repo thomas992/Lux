@@ -1,6 +1,6 @@
-# LoLa Standard Library
+# Lux Standard Library
 
-This file documents the LoLa Standard Library, a set of basic routines to enable LoLa programs.
+This file documents the Lux Standard Library, a set of basic routines to enable Lux programs.
 
 ## String API
 
@@ -167,7 +167,7 @@ Returns the current wall clock time as a unix timestamp.
 
 Returns the type of the argument as a string. Returns one of the following:
 
-```lola
+```lux
 "void", "boolean", "string", "number", "object", "array"
 ```
 

@@ -1,8 +1,8 @@
-# LoLa Runtime Library
+# Lux Runtime Library
 
-This file documents the LoLa Runtime Library, a set of basic I/O routines to enable standalone LoLa programs.
+This file documents the Lux Runtime Library, a set of basic I/O routines to enable standalone Lux programs.
 
-The API in this document is meant for the standalone LoLa interpreter and functions listed here are not necessarily available in embedded programs! 
+The API in this document is meant for the standalone Lux interpreter and functions listed here are not necessarily available in embedded programs! 
 
 ## Generic
 

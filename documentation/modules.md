@@ -1,6 +1,6 @@
-#  LoLa Module Format
+#  Lux Module Format
 
-Native LoLa has a binary module format that contains compiled intermediate code. This format both contains meta-data like function names, but also the compiled code.
+Native Lux has a binary module format that contains compiled intermediate code. This format both contains meta-data like function names, but also the compiled code.
 
 ## Data Structure
 

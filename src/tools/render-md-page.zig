@@ -80,9 +80,7 @@ pub fn main() !u8 {
             \\<head>
             \\  <meta charset="utf-8">
             \\  <meta name="viewport" content="width=device-width, initial-scale=1">
-            \\  <title>LoLa Documentation</title>
-            \\  <link rel="icon"
-            \\    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgklEQVR4AWMYWuD7EllJIM4G4g4g5oIJ/odhOJ8wToOxSTXgNxDHoeiBMfA4+wGShjyYOCkG/IGqWQziEzYAoUAeiF9D5U+DxEg14DRU7jWIT5IBIOdCxf+A+CQZAAoopEB7QJwBCBwHiip8UYmRdrAlDpIMgApwQZNnNii5Dq0MBgCxxycBnwEd+wAAAABJRU5ErkJggg==">
+            \\  <title>Lux Documentation</title>
             \\  <link rel="stylesheet" href="../documentation.css" />
             \\</head>
             \\
@@ -120,7 +118,7 @@ pub fn main() !u8 {
             \\          </ul>
             \\        </div>
             \\        <div id="sectInfo" class="">
-            \\          <h2><span>LoLa Version</span></h2>
+            \\          <h2><span>Lux Version</span></h2>
             \\          <p class="str" id="tdZigVer">{s}</p>
             \\        </div>
             \\      </nav>

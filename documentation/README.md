@@ -1,8 +1,8 @@
-# The LoLa Programming Language
+# The Lux Programming Language
 
 ## Introduction
 
-LoLa is a small programming language developed to be embedded in games. It's not meant as a scripting language to create games with but as language to be **programmed in the game by the player**.
+Lux is a small programming language developed to be embedded in games. It's not meant as a scripting language to create games with but as language to be **programmed in the game by the player**.
 
 The design goals of the language are:
 
@@ -23,7 +23,7 @@ More [Examples](#Examples) can be found at the end of the document.
 
 ## Comments
 
-LoLa provides only single-line comments:
+Lux provides only single-line comments:
 
 ```js
 // This is a comment
@@ -42,7 +42,7 @@ The language provides a small set of types data can have:
 | `void`    | The `void` type can only have a single value (which is also `void`) and indicates the absence of a value. Functions that do not return something will return this. |
 | `boolean` | A truth value, which is either `true` or `false`. This type is the result of comparisons and can be passed to conditionals. It is also the input to the [boolean algebra](https://en.wikipedia.org/wiki/Boolean_algebra) operators. |
 | `number`  | A [IEEE-754 binary64](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) encoded real number. This is the basic type for all algebraic operations. |
-| `string`  | A [string](https://en.wikipedia.org/wiki/String_(computer_science)) in LoLa is a sequence of bytes, usually encodes text as [ASCII](https://en.wikipedia.org/wiki/ASCII) or [UTF-8](https://en.wikipedia.org/wiki/UTF-8). |
+| `string`  | A [string](https://en.wikipedia.org/wiki/String_(computer_science)) in Lux is a sequence of bytes, usually encodes text as [ASCII](https://en.wikipedia.org/wiki/ASCII) or [UTF-8](https://en.wikipedia.org/wiki/UTF-8). |
 | `object`  | An object is a thing that has an interface with callable methods. |
 | `array`   | An array is a sequence of arbitrary values.                  |
 
@@ -58,7 +58,7 @@ Literals provide a way to create a primitive value in the language. All of the t
 | `string`  | `"Hello, World!"`, `""`, `"One\nTwo\nThree"`  |
 | `array`   | `[]`, `[1,2,3,4,5]`, `[true, false, void]`    |
 
-LoLa also supports character literals. Character literals have the type `number` and will be equivalent to their unicode codepoint and might be written literally (`ö`) or with the same rules as string escapes (`\xF3`):
+Lux also supports character literals. Character literals have the type `number` and will be equivalent to their unicode codepoint and might be written literally (`ö`) or with the same rules as string escapes (`\xF3`):
 
 ```js
 0x20    == ' '
@@ -68,11 +68,11 @@ LoLa also supports character literals. Character literals have the type `number`
 0x1F4A9 == '\xf0\x9f\x92\xa9'
 ```
 
-As LoLa doesn't enforce utf-8 encoding, all single-byte literals will be copied verbatim, allowing support for any 8-bit encoding. All literals that take up more than a single byte will be assumed utf-8 encoded.
+As Lux doesn't enforce utf-8 encoding, all single-byte literals will be copied verbatim, allowing support for any 8-bit encoding. All literals that take up more than a single byte will be assumed utf-8 encoded.
 
 ### String Escape Sequence
 
-As strings are contained in double quotes and don't allow to contain a line feed, one needs the possibility to escape those characters. For this, LoLa provides two ways to include escaped and non-printable characters in a string:
+As strings are contained in double quotes and don't allow to contain a line feed, one needs the possibility to escape those characters. For this, Lux provides two ways to include escaped and non-printable characters in a string:
 
 - Use a hexadecimal escape (`\x63`)
 - Use one of the predefined escape shorthands (`\r`, `\n`)
@@ -106,7 +106,7 @@ var y = 10; // Initialized global variable
 }
 ```
 
-There are three kind of variables in LoLa:
+There are three kind of variables in Lux:
 
 - Global Variables
 - Local Variables
@@ -119,11 +119,11 @@ All variables are dynamically typed and may change the type of the stored value 
 
 ### Shadowing
 
-LoLa allows shadowing of variable names. This means, that you can have a variable with the same name as a previously declared variable. The previously declared variable will be hidden (shadowed) by the newly declared variable for the scope of the shadowing variable.
+Lux allows shadowing of variable names. This means, that you can have a variable with the same name as a previously declared variable. The previously declared variable will be hidden (shadowed) by the newly declared variable for the scope of the shadowing variable.
 
 ## Operators
 
-LoLa provides several operators that execute arithmetic, logic or comparison operations.
+Lux provides several operators that execute arithmetic, logic or comparison operations.
 
 ### Table of Operators
 
@@ -164,7 +164,7 @@ Operator precedence in the list low to high. A higher precedence means that thes
 
 ## Control Flow Structures
 
-LoLa provides a small set of control flow structures that are simple to use and are widespread in a lot of programming languages.
+Lux provides a small set of control flow structures that are simple to use and are widespread in a lot of programming languages.
 
 ### Blocks
 
@@ -177,11 +177,11 @@ LoLa provides a small set of control flow structures that are simple to use and 
 // x is not valid here anymore!
 ```
 
-Blocks are a convenient way of introducing structure into the code. Each block has its own set of local variables, but can access the local variables of its parent as well. Each control structure in LoLa is followed by a block, but blocks can also be freestanding as in the example above.
+Blocks are a convenient way of introducing structure into the code. Each block has its own set of local variables, but can access the local variables of its parent as well. Each control structure in Lux is followed by a block, but blocks can also be freestanding as in the example above.
 
 ### Assignments
 
-Assignments in LoLa are statements that return no value. This is different from other programming languages like C that allow nesting assignments into expressions (~~`a + (b = c)`~~).
+Assignments in Lux are statements that return no value. This is different from other programming languages like C that allow nesting assignments into expressions (~~`a + (b = c)`~~).
 
 ```js
 a = b; // simple assignment, copy the value from b into a.
@@ -257,7 +257,7 @@ The `while` loop will check the condition in the round brackets. If the conditio
 
 ### `for`-Loop
 
-Iterating over an array is such a common task that LoLa provides a built-in loop for that:
+Iterating over an array is such a common task that Lux provides a built-in loop for that:
 
 ```js
 for(x in data) {
@@ -397,7 +397,7 @@ Functions have their own scope, and may `return` a value to their caller.
 
 ## Top Level Code
 
-Similar to other scripting languages, LoLa allows not only top-level declarations, but also top-level code. This means there is no `main` function that is called when starting execution, but the top-level code will be run instead.
+Similar to other scripting languages, Lux allows not only top-level declarations, but also top-level code. This means there is no `main` function that is called when starting execution, but the top-level code will be run instead.
 
 ```js
 // This is not a snippet, but a valid file!
@@ -409,11 +409,11 @@ function SayHelloTo(name)
 }
 ```
 
-As you can see, the order of declaration is not relevant in LoLa. Functions may be called from top-level before or after declaration.
+As you can see, the order of declaration is not relevant in Lux. Functions may be called from top-level before or after declaration.
 
 ## Error Handling
 
-The LoLa language has not a very sophisticated error handling concept. If something goes wrong, the runtime will just panic and return execution to the host system with the position where the panic happened as well as some basic info about what failed.
+The Lux language has not a very sophisticated error handling concept. If something goes wrong, the runtime will just panic and return execution to the host system with the position where the panic happened as well as some basic info about what failed.
 
 Possible panics are:
 
@@ -423,22 +423,22 @@ Possible panics are:
 - `InvalidArgs` (a wrong number of arguments was passed to a function)
 - `OutOfRange` (a numeric value wasn't in the allowed range)
 
-A panic may be caused by the LoLa virtual machine or any library functions.
+A panic may be caused by the Lux virtual machine or any library functions.
 
 ## Objects
 
-Objects in LoLa are opaque handles except for their methods. Users cannot declare or create objects without the help of the script host. Object handles are usually valid as long as the LoLa script has access to that handle, but the script host might destroy objects actively as well.
+Objects in Lux are opaque handles except for their methods. Users cannot declare or create objects without the help of the script host. Object handles are usually valid as long as the Lux script has access to that handle, but the script host might destroy objects actively as well.
 
-Object handles can be considered a reference type as you don't get a copy of the object when you pass a handle around. This type would be the only exception to LoLas design of *value types only*.
+Object handles can be considered a reference type as you don't get a copy of the object when you pass a handle around. This type would be the only exception to the Lux design of *value types only*.
 
-## LoLa File Types
+## Lux File Types
 
-The following list contains LoLa-related file types 
+The following list contains Lux-related file types 
 
-- LoLa Code (`*.lola`)
-  These files contain actual LoLa source code and can be compiled into modules.
-- [LoLa Modules](Modules.md) (`*.lola.lm`)
-  These files contain compiled LoLa byte code and can be executed by a [LoLa VM](IR.md).
+- Lux Code (`*.lux`)
+  These files contain actual Lux source code and can be compiled into modules.
+- [Lux Modules](Modules.md) (`*.lux.lm`)
+  These files contain compiled Lux byte code and can be executed by a [Lux VM](IR.md).
 
 ## Frequently Asked Questions
 
@@ -446,9 +446,9 @@ This section tries to answer questions that are commonly asked.
 
 ### Why does the language not allow user-defined objects?
 
-The design decision of LoLa was to be a simple as possible without losing too much features. User-defined objects would make the language way more complex and harder to reason about code. As the focus group of the language is mostly programmer novices, this complexity was left out and passed to the script host.
+The design decision of Lux was to be a simple as possible without losing too much features. User-defined objects would make the language way more complex and harder to reason about code. As the focus group of the language is mostly programmer novices, this complexity was left out and passed to the script host.
 
-It is still possible to create user-defined objects and classes though: The script host might implement a function `MakeObject(str)` which compiles a LoLa source and returns the compiled script as a object, evaluating the top-level code as some kind of constructor and exporting all functions as methods to that object.
+It is still possible to create user-defined objects and classes though: The script host might implement a function `MakeObject(str)` which compiles a Lux source and returns the compiled script as a object, evaluating the top-level code as some kind of constructor and exporting all functions as methods to that object.
 
 ## List of Keywords
 
@@ -469,7 +469,7 @@ It is still possible to create user-defined objects and classes though: The scri
 
 ## Wording
 
-The following chapter explains some of the words used in this document with concrete focus on the meaning inside LoLa.
+The following chapter explains some of the words used in this document with concrete focus on the meaning inside Lux.
 
 ### Statement
 
@@ -493,7 +493,7 @@ Examples for expressions are:
 - `SumOf(10, 20)`
 - …
 
-LoLa does not allow lone statements except for function and method calls. These are special in a way that they may discard their value. The resulting value of all other expressions may not be discarded.
+Lux does not allow lone statements except for function and method calls. These are special in a way that they may discard their value. The resulting value of all other expressions may not be discarded.
 
 ### Block
 
