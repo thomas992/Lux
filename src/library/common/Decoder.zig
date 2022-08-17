@@ -6,7 +6,7 @@ const utility = @import("utility.zig");
 const ir = @import("ir.zig");
 const CompileUnit = @import("CompileUnit.zig");
 
-/// A struct that allows decoding data from LoLa IR code.
+/// A struct that allows decoding data from Lux IR code.
 pub const Decoder = @This();
 
 data: []const u8,

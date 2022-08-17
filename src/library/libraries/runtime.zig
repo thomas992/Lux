@@ -1,15 +1,15 @@
-// This file implements the LoLa Runtime Library.
+// This file implements the Lux Runtime Library.
 
 const std = @import("std");
 const builtin = @import("builtin");
-const lola = @import("../main.zig");
+const lux = @import("../main.zig");
 const root = @import("root");
 
 const GlobalObjectPool = if (builtin.is_test)
     // we need to do a workaround here for testing purposes
-    lola.runtime.ObjectPool([_]type{
-        LoLaList,
-        LoLaDictionary,
+    lux.runtime.ObjectPool([_]type{
+        LuxList,
+        LuxDictionary,
     })
 else if (@hasDecl(root, "ObjectPool"))
     root.ObjectPool
@@ -18,38 +18,38 @@ else
 
 comptime {
     if (builtin.is_test) {
-        const T = lola.runtime.ObjectPool([_]type{
-            LoLaList,
-            LoLaDictionary,
+        const T = lux.runtime.ObjectPool([_]type{
+            LuxList,
+            LuxDictionary,
         });
 
         if (!T.serializable)
-            @compileError("Both LoLaList and LoLaDictionary must be serializable!");
+            @compileError("Both LuxList and LuxDictionary must be serializable!");
     }
 }
 
 /// empty compile unit for testing purposes
-const empty_compile_unit = lola.CompileUnit{
+const empty_compile_unit = lux.CompileUnit{
     .arena = std.heap.ArenaAllocator.init(std.testing.failing_allocator),
     .comment = "empty compile unit",
     .globalCount = 0,
     .temporaryCount = 0,
     .code = "",
-    .functions = &[0]lola.CompileUnit.Function{},
-    .debugSymbols = &[0]lola.CompileUnit.DebugSymbol{},
+    .functions = &[0]lux.CompileUnit.Function{},
+    .debugSymbols = &[0]lux.CompileUnit.DebugSymbol{},
 };
 
 test "runtime.install" {
     var pool = GlobalObjectPool.init(std.testing.allocator);
     defer pool.deinit();
 
-    var env = try lola.runtime.Environment.init(std.testing.allocator, &empty_compile_unit, pool.interface());
+    var env = try lux.runtime.Environment.init(std.testing.allocator, &empty_compile_unit, pool.interface());
     defer env.deinit();
 
-    try env.installModule(@This(), lola.runtime.Context.null_pointer);
+    try env.installModule(@This(), lux.runtime.Context.null_pointer);
 }
 
-// fn Sleep(call_context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.AsyncFunctionCall {
+// fn Sleep(call_context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.AsyncFunctionCall {
 //     const allocator = call_context.get(std.mem.Allocator);
 
 //     if (args.len != 1)
@@ -67,16 +67,16 @@ test "runtime.install" {
 //         .end_time = @intToFloat(f64, std.time.milliTimestamp()) + 1000.0 * seconds,
 //     };
 
-//     return lola.runtime.AsyncFunctionCall{
-//         .context = lola.runtime.Context.init(Context, ptr),
+//     return lux.runtime.AsyncFunctionCall{
+//         .context = lux.runtime.Context.init(Context, ptr),
 //         .destructor = struct {
-//             fn dtor(exec_context: lola.runtime.Context) void {
+//             fn dtor(exec_context: lux.runtime.Context) void {
 //                 const ctx = exec_context.get(Context);
 //                 ctx.allocator.destroy(ctx);
 //             }
 //         }.dtor,
 //         .execute = struct {
-//             fn execute(exec_context: lola.runtime.Context) anyerror!?lola.runtime.Value {
+//             fn execute(exec_context: lux.runtime.Context) anyerror!?lux.runtime.Value {
 //                 const ctx = exec_context.get(Context);
 
 //                 if (ctx.end_time < @intToFloat(f64, std.time.milliTimestamp())) {
@@ -89,7 +89,7 @@ test "runtime.install" {
 //     };
 // }
 
-pub fn Print(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+pub fn Print(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
     _ = environment;
     _ = context;
 
@@ -104,7 +104,7 @@ pub fn Print(environment: *const lola.runtime.Environment, context: lola.runtime
     return .void;
 }
 
-pub fn Exit(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+pub fn Exit(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
     _ = environment;
     _ = context;
 
@@ -115,7 +115,7 @@ pub fn Exit(environment: *const lola.runtime.Environment, context: lola.runtime.
     std.process.exit(status);
 }
 
-pub fn ReadFile(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+pub fn ReadFile(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
     _ = environment;
     _ = context;
 
@@ -130,10 +130,10 @@ pub fn ReadFile(environment: *const lola.runtime.Environment, context: lola.runt
     // 2 GB
     var contents = try file.readToEndAlloc(environment.allocator, 2 << 30);
 
-    return lola.runtime.Value.fromString(lola.runtime.String.initFromOwned(environment.allocator, contents));
+    return lux.runtime.Value.fromString(lux.runtime.String.initFromOwned(environment.allocator, contents));
 }
 
-pub fn FileExists(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+pub fn FileExists(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
     _ = environment;
     _ = context;
 
@@ -142,13 +142,13 @@ pub fn FileExists(environment: *const lola.runtime.Environment, context: lola.ru
 
     const path = try args[0].toString();
 
-    var file = std.fs.cwd().openFile(path, .{ .mode = .read_only }) catch return lola.runtime.Value.initBoolean(false);
+    var file = std.fs.cwd().openFile(path, .{ .mode = .read_only }) catch return lux.runtime.Value.initBoolean(false);
     file.close();
 
-    return lola.runtime.Value.initBoolean(true);
+    return lux.runtime.Value.initBoolean(true);
 }
 
-pub fn WriteFile(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+pub fn WriteFile(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
     _ = environment;
     _ = context;
 
@@ -166,19 +166,19 @@ pub fn WriteFile(environment: *const lola.runtime.Environment, context: lola.run
     return .void;
 }
 
-pub fn CreateList(environment: *lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+pub fn CreateList(environment: *lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
     _ = context;
     if (args.len > 1)
         return error.InvalidArgs;
 
     if (args.len > 0) _ = try args[0].toArray();
 
-    const list = try environment.allocator.create(LoLaList);
+    const list = try environment.allocator.create(LuxList);
     errdefer environment.allocator.destroy(list);
 
-    list.* = LoLaList{
+    list.* = LuxList{
         .allocator = environment.allocator,
-        .data = std.ArrayList(lola.runtime.Value).init(environment.allocator),
+        .data = std.ArrayList(lux.runtime.Value).init(environment.allocator),
     };
 
     if (args.len > 0) {
@@ -199,41 +199,41 @@ pub fn CreateList(environment: *lola.runtime.Environment, context: lola.runtime.
         }
     }
 
-    return lola.runtime.Value.initObject(
+    return lux.runtime.Value.initObject(
         try environment.objectPool.castTo(GlobalObjectPool).createObject(list),
     );
 }
 
-pub fn CreateDictionary(environment: *lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+pub fn CreateDictionary(environment: *lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
     _ = context;
     if (args.len != 0)
         return error.InvalidArgs;
 
-    const list = try environment.allocator.create(LoLaDictionary);
+    const list = try environment.allocator.create(LuxDictionary);
     errdefer environment.allocator.destroy(list);
 
-    list.* = LoLaDictionary{
+    list.* = LuxDictionary{
         .allocator = environment.allocator,
-        .data = std.ArrayList(LoLaDictionary.KV).init(environment.allocator),
+        .data = std.ArrayList(LuxDictionary.KV).init(environment.allocator),
     };
 
-    return lola.runtime.Value.initObject(
+    return lux.runtime.Value.initObject(
         try environment.objectPool.castTo(GlobalObjectPool).createObject(list),
     );
 }
 
-pub const LoLaList = struct {
+pub const LuxList = struct {
     const Self = @This();
 
     allocator: std.mem.Allocator,
-    data: std.ArrayList(lola.runtime.Value),
+    data: std.ArrayList(lux.runtime.Value),
 
-    pub fn getMethod(self: *Self, name: []const u8) ?lola.runtime.Function {
+    pub fn getMethod(self: *Self, name: []const u8) ?lux.runtime.Function {
         inline for (comptime std.meta.declarations(funcs)) |decl| {
             if (std.mem.eql(u8, name, decl.name)) {
-                return lola.runtime.Function{
+                return lux.runtime.Function{
                     .syncUser = .{
-                        .context = lola.runtime.Context.make(*Self, self),
+                        .context = lux.runtime.Context.make(*Self, self),
                         .call = @field(funcs, decl.name),
                         .destructor = null,
                     },
@@ -251,19 +251,19 @@ pub const LoLaList = struct {
         self.allocator.destroy(self);
     }
 
-    pub fn serializeObject(writer: lola.runtime.OutputStream.Writer, object: *Self) !void {
+    pub fn serializeObject(writer: lux.runtime.OutputStream.Writer, object: *Self) !void {
         try writer.writeIntLittle(u32, @intCast(u32, object.data.items.len));
         for (object.data.items) |item| {
             try item.serialize(writer);
         }
     }
 
-    pub fn deserializeObject(allocator: std.mem.Allocator, reader: lola.runtime.InputStream.Reader) !*Self {
+    pub fn deserializeObject(allocator: std.mem.Allocator, reader: lux.runtime.InputStream.Reader) !*Self {
         const item_count = try reader.readIntLittle(u32);
         var list = try allocator.create(Self);
         list.* = Self{
             .allocator = allocator,
-            .data = std.ArrayList(lola.runtime.Value).init(allocator),
+            .data = std.ArrayList(lux.runtime.Value).init(allocator),
         };
         errdefer list.destroyObject(); // this will also free memory!
 
@@ -276,14 +276,14 @@ pub const LoLaList = struct {
         }
 
         for (list.data.items) |*item| {
-            item.* = try lola.runtime.Value.deserialize(reader, allocator);
+            item.* = try lux.runtime.Value.deserialize(reader, allocator);
         }
 
         return list;
     }
 
     const funcs = struct {
-        fn Add(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Add(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 1)
@@ -297,7 +297,7 @@ pub const LoLaList = struct {
             return .void;
         }
 
-        fn Remove(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Remove(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 1)
@@ -339,7 +339,7 @@ pub const LoLaList = struct {
             return .void;
         }
 
-        fn RemoveAt(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn RemoveAt(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 1)
@@ -350,7 +350,7 @@ pub const LoLaList = struct {
             if (index < list.data.items.len) {
                 list.data.items[index].deinit();
                 std.mem.copy(
-                    lola.runtime.Value,
+                    lux.runtime.Value,
                     list.data.items[index..],
                     list.data.items[index + 1 ..],
                 );
@@ -360,15 +360,15 @@ pub const LoLaList = struct {
             return .void;
         }
 
-        fn GetCount(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn GetCount(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 0)
                 return error.InvalidArgs;
-            return lola.runtime.Value.initInteger(usize, list.data.items.len);
+            return lux.runtime.Value.initInteger(usize, list.data.items.len);
         }
 
-        fn GetItem(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn GetItem(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 1)
@@ -380,7 +380,7 @@ pub const LoLaList = struct {
             return try list.data.items[index].clone();
         }
 
-        fn SetItem(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn SetItem(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 2)
@@ -396,23 +396,23 @@ pub const LoLaList = struct {
             return .void;
         }
 
-        fn ToArray(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn ToArray(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 0)
                 return error.InvalidArgs;
 
-            var array = try lola.runtime.Array.init(list.allocator, list.data.items.len);
+            var array = try lux.runtime.Array.init(list.allocator, list.data.items.len);
             errdefer array.deinit();
 
             for (array.contents) |*item, index| {
                 item.* = try list.data.items[index].clone();
             }
 
-            return lola.runtime.Value.fromArray(array);
+            return lux.runtime.Value.fromArray(array);
         }
 
-        fn IndexOf(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn IndexOf(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 1)
@@ -420,13 +420,13 @@ pub const LoLaList = struct {
 
             for (list.data.items) |item, index| {
                 if (item.eql(args[0]))
-                    return lola.runtime.Value.initInteger(usize, index);
+                    return lux.runtime.Value.initInteger(usize, index);
             }
 
             return .void;
         }
 
-        fn Resize(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Resize(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 1)
@@ -450,7 +450,7 @@ pub const LoLaList = struct {
             return .void;
         }
 
-        fn Clear(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Clear(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const list = context.cast(*Self);
             if (args.len != 0)
@@ -466,12 +466,12 @@ pub const LoLaList = struct {
     };
 };
 
-pub const LoLaDictionary = struct {
+pub const LuxDictionary = struct {
     const Self = @This();
 
     const KV = struct {
-        key: lola.runtime.Value,
-        value: lola.runtime.Value,
+        key: lux.runtime.Value,
+        value: lux.runtime.Value,
 
         fn deinit(self: *KV) void {
             self.key.deinit();
@@ -483,12 +483,12 @@ pub const LoLaDictionary = struct {
     allocator: std.mem.Allocator,
     data: std.ArrayList(KV),
 
-    pub fn getMethod(self: *Self, name: []const u8) ?lola.runtime.Function {
+    pub fn getMethod(self: *Self, name: []const u8) ?lux.runtime.Function {
         inline for (comptime std.meta.declarations(funcs)) |decl| {
             if (std.mem.eql(u8, name, decl.name)) {
-                return lola.runtime.Function{
+                return lux.runtime.Function{
                     .syncUser = .{
-                        .context = lola.runtime.Context.make(*Self, self),
+                        .context = lux.runtime.Context.make(*Self, self),
                         .call = @field(funcs, decl.name),
                         .destructor = null,
                     },
@@ -506,7 +506,7 @@ pub const LoLaDictionary = struct {
         self.allocator.destroy(self);
     }
 
-    pub fn serializeObject(writer: lola.runtime.OutputStream.Writer, object: *Self) !void {
+    pub fn serializeObject(writer: lux.runtime.OutputStream.Writer, object: *Self) !void {
         try writer.writeIntLittle(u32, @intCast(u32, object.data.items.len));
         for (object.data.items) |item| {
             try item.key.serialize(writer);
@@ -514,7 +514,7 @@ pub const LoLaDictionary = struct {
         }
     }
 
-    pub fn deserializeObject(allocator: std.mem.Allocator, reader: lola.runtime.InputStream.Reader) !*Self {
+    pub fn deserializeObject(allocator: std.mem.Allocator, reader: lux.runtime.InputStream.Reader) !*Self {
         const item_count = try reader.readIntLittle(u32);
         var list = try allocator.create(Self);
         list.* = Self{
@@ -535,15 +535,15 @@ pub const LoLaDictionary = struct {
         }
 
         for (list.data.items) |*item| {
-            item.key = try lola.runtime.Value.deserialize(reader, allocator);
-            item.value = try lola.runtime.Value.deserialize(reader, allocator);
+            item.key = try lux.runtime.Value.deserialize(reader, allocator);
+            item.value = try lux.runtime.Value.deserialize(reader, allocator);
         }
 
         return list;
     }
 
     const funcs = struct {
-        fn Set(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Set(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             const dict = context.cast(*Self);
             if (args.len != 2)
                 return error.InvalidArgs;
@@ -576,7 +576,7 @@ pub const LoLaDictionary = struct {
             return .void;
         }
 
-        fn Get(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Get(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const dict = context.cast(*Self);
             if (args.len != 1)
@@ -591,7 +591,7 @@ pub const LoLaDictionary = struct {
             return .void;
         }
 
-        fn Contains(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Contains(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const dict = context.cast(*Self);
             if (args.len != 1)
@@ -599,14 +599,14 @@ pub const LoLaDictionary = struct {
 
             for (dict.data.items) |item| {
                 if (item.key.eql(args[0])) {
-                    return lola.runtime.Value.initBoolean(true);
+                    return lux.runtime.Value.initBoolean(true);
                 }
             }
 
-            return lola.runtime.Value.initBoolean(false);
+            return lux.runtime.Value.initBoolean(false);
         }
 
-        fn Remove(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Remove(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const dict = context.cast(*Self);
             if (args.len != 1)
@@ -621,13 +621,13 @@ pub const LoLaDictionary = struct {
                     dict.data.items[index] = dict.data.items[last_index];
                     dict.data.shrinkRetainingCapacity(last_index);
 
-                    return lola.runtime.Value.initBoolean(true);
+                    return lux.runtime.Value.initBoolean(true);
                 }
             }
-            return lola.runtime.Value.initBoolean(false);
+            return lux.runtime.Value.initBoolean(false);
         }
 
-        fn Clear(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn Clear(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const dict = context.cast(*Self);
             if (args.len != 0)
@@ -639,42 +639,42 @@ pub const LoLaDictionary = struct {
             return .void;
         }
 
-        fn GetCount(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn GetCount(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const dict = context.cast(*Self);
             if (args.len != 0)
                 return error.InvalidArgs;
-            return lola.runtime.Value.initInteger(usize, dict.data.items.len);
+            return lux.runtime.Value.initInteger(usize, dict.data.items.len);
         }
 
-        fn GetKeys(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn GetKeys(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const dict = context.cast(*Self);
             if (args.len != 0)
                 return error.InvalidArgs;
-            var arr = try lola.runtime.Array.init(dict.allocator, dict.data.items.len);
+            var arr = try lux.runtime.Array.init(dict.allocator, dict.data.items.len);
             errdefer arr.deinit();
 
             for (dict.data.items) |item, index| {
                 arr.contents[index].replaceWith(try item.key.clone());
             }
 
-            return lola.runtime.Value.fromArray(arr);
+            return lux.runtime.Value.fromArray(arr);
         }
 
-        fn GetValues(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        fn GetValues(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
             _ = environment;
             const dict = context.cast(*Self);
             if (args.len != 0)
                 return error.InvalidArgs;
-            var arr = try lola.runtime.Array.init(dict.allocator, dict.data.items.len);
+            var arr = try lux.runtime.Array.init(dict.allocator, dict.data.items.len);
             errdefer arr.deinit();
 
             for (dict.data.items) |item, index| {
                 arr.contents[index].replaceWith(try item.value.clone());
             }
 
-            return lola.runtime.Value.fromArray(arr);
+            return lux.runtime.Value.fromArray(arr);
         }
     };
 };

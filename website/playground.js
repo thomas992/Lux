@@ -3,7 +3,7 @@ const templates = [
   {
     name: 'Hello, World!',
     text:
-        `// Enter LoLa code here and press [Run] above to compile & execute the code!
+        `// Enter Lux code here and press [Run] above to compile & execute the code!
 Print("Hello, World!");
 `,
   },
@@ -138,7 +138,7 @@ window.addEventListener('DOMContentLoaded', (ev) => {
   }
 
   editor.session.setValue(
-      `// Enter LoLa code here and press [Run] above to compile & execute the code!
+      `// Enter Lux code here and press [Run] above to compile & execute the code!
 Print("Hello, World!");
 while(true) {
   var str = Read();
@@ -241,7 +241,7 @@ function stepRuntime(time) {
 
 
 // Load and initialize the wasm runtime
-fetch('lola.wasm')
+fetch('./lux.wasm')
     .then(response => response.arrayBuffer())
     .then(bytes => WebAssembly.instantiate(bytes, wasmImports))
     .then(results => {

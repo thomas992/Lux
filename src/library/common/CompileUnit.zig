@@ -60,7 +60,7 @@ pub fn loadFromStream(allocator: std.mem.Allocator, stream: anytype) !CompileUni
         error.EndOfStream => return error.InvalidFormat, // file is too short!
         else => return err,
     };
-    if (!std.mem.eql(u8, &header, "LoLa\xB9\x40\x80\x5A"))
+    if (!std.mem.eql(u8, &header, "Lux\xB9\x40\x80\x5A"))
         return error.InvalidFormat;
     const version = try stream.readIntLittle(u32);
     if (version != 1)
@@ -141,7 +141,7 @@ pub fn loadFromStream(allocator: std.mem.Allocator, stream: anytype) !CompileUni
 
 /// Saves a compile unit to a data stream.
 pub fn saveToStream(self: CompileUnit, stream: anytype) !void {
-    try stream.writeAll("LoLa\xB9\x40\x80\x5A");
+    try stream.writeAll("Lux\xB9\x40\x80\x5A");
     try stream.writeIntLittle(u32, 1);
     try stream.writeAll(self.comment);
     try stream.writeByteNTimes(0, 256 - self.comment.len);
@@ -184,9 +184,9 @@ pub fn deinit(self: CompileUnit) void {
 }
 
 const serializedCompileUnit = "" // SoT
-++ "LoLa\xB9\x40\x80\x5A" // Header
+++ "Lux\xB9\x40\x80\x5A" // Header
 ++ "\x01\x00\x00\x00" // Version
-++ "Made with NativeLola.zig!" ++ ("\x00" ** (256 - 25)) // Comment
+++ "Made with NativeLux.zig!" ++ ("\x00" ** (256 - 25)) // Comment
 ++ "\x03\x00" // globalCount
 ++ "\x55\x11" // temporaryCount
 ++ "\x02\x00" // functionCount
@@ -210,7 +210,7 @@ test "CompileUnit I/O" {
     const cu = try CompileUnit.loadFromStream(std.testing.allocator, sliceInStream.reader());
     defer cu.deinit();
 
-    std.debug.assert(std.mem.eql(u8, cu.comment, "Made with NativeLola.zig!"));
+    std.debug.assert(std.mem.eql(u8, cu.comment, "Made with NativeLux.zig!"));
     std.debug.assert(cu.globalCount == 3);
     std.debug.assert(cu.temporaryCount == 0x1155);
     std.debug.assert(std.mem.eql(u8, cu.code, "Hello"));

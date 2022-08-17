@@ -7,7 +7,7 @@ const Environment = @import("Environment.zig");
 const vm_unit = @import("vm.zig");
 const Value = @import("value.zig").Value;
 
-/// Non-owning interface to a abstract LoLa object.
+/// Non-owning interface to a abstract Lux object.
 /// It is associated with a object handle in the `ObjectPool` and provides
 /// a way to get methods as well as destroy the object when it's garbage collected.
 pub const Object = struct {
@@ -475,7 +475,7 @@ pub fn ObjectPool(comptime classes_list: anytype) type {
         // Interface API:
 
         /// Returns the non-generic interface for this object pool.
-        /// Pass this to `Environment` or other LoLa components.
+        /// Pass this to `Environment` or other Lux components.
         pub fn interface(self: *Self) ObjectPoolInterface {
             const Impl = struct {
                 const ErasedSelf = ObjectPoolInterface.ErasedSelf;

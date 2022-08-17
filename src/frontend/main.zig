@@ -1,6 +1,6 @@
 const std = @import("std");
 const builtin = @import("builtin");
-const lola = @import("lola");
+const lux = @import("lux");
 const args_parser = @import("args");
 const build_options = @import("build_options");
 
@@ -9,9 +9,9 @@ const gpa = gpa_state.allocator();
 
 // This is our global object pool that is back-referenced
 // by the runtime library.
-pub const ObjectPool = lola.runtime.ObjectPool([_]type{
-    lola.libs.runtime.LoLaList,
-    lola.libs.runtime.LoLaDictionary,
+pub const ObjectPool = lux.runtime.ObjectPool([_]type{
+    lux.libs.runtime.LuxList,
+    lux.libs.runtime.LuxDictionary,
 });
 
 pub fn main() !u8 {
@@ -137,7 +137,7 @@ fn disassemble(options: DisassemblerCLI, files: []const []const u8) !u8 {
             var file = try std.fs.cwd().openFile(arg, .{ .mode = .read_only });
             defer file.close();
 
-            break :blk try lola.CompileUnit.loadFromStream(allocator, file.reader());
+            break :blk try lux.CompileUnit.loadFromStream(allocator, file.reader());
         };
         defer cu.deinit();
 
@@ -160,7 +160,7 @@ fn disassemble(options: DisassemblerCLI, files: []const []const u8) !u8 {
             try stream.writeAll("disassembly:\n");
         }
 
-        try lola.disassemble(stream, cu, lola.DisassemblerOptions{
+        try lux.disassemble(stream, cu, lux.DisassemblerOptions{
             .addressPrefix = options.@"with-offset",
             .hexwidth = if (options.@"with-hexdump") 8 else null,
             .labelOutput = true,
@@ -231,7 +231,7 @@ const RunCLI = struct {
     benchmark: bool = false,
 };
 
-fn autoLoadModule(allocator: std.mem.Allocator, options: RunCLI, file: []const u8) !lola.CompileUnit {
+fn autoLoadModule(allocator: std.mem.Allocator, options: RunCLI, file: []const u8) !lux.CompileUnit {
     return switch (options.mode) {
         .autodetect => loadModuleFromFile(allocator, file) catch |err| if (err == error.InvalidFormat)
             try compileFileToUnit(allocator, file)
@@ -275,20 +275,20 @@ fn run(options: RunCLI, files: []const []const u8) !u8 {
     var pool = ObjectPool.init(allocator);
     defer pool.deinit();
 
-    var env = try lola.runtime.Environment.init(allocator, &cu, pool.interface());
+    var env = try lux.runtime.Environment.init(allocator, &cu, pool.interface());
     defer env.deinit();
 
     if (!options.@"no-stdlib") {
-        try env.installModule(lola.libs.std, lola.runtime.Context.null_pointer);
+        try env.installModule(lux.libs.std, lux.runtime.Context.null_pointer);
     }
 
     if (!options.@"no-runtime") {
-        try env.installModule(lola.libs.runtime, lola.runtime.Context.null_pointer);
+        try env.installModule(lux.libs.runtime, lux.runtime.Context.null_pointer);
 
         // Move these two to a test runner
 
-        try env.installFunction("Expect", lola.runtime.Function.initSimpleUser(struct {
-            fn call(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        try env.installFunction("Expect", lux.runtime.Function.initSimpleUser(struct {
+            fn call(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
                 _ = environment;
                 _ = context;
                 if (args.len != 1)
@@ -302,8 +302,8 @@ fn run(options: RunCLI, files: []const []const u8) !u8 {
             }
         }.call));
 
-        try env.installFunction("ExpectEqual", lola.runtime.Function.initSimpleUser(struct {
-            fn call(environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        try env.installFunction("ExpectEqual", lux.runtime.Function.initSimpleUser(struct {
+            fn call(environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
                 _ = environment;
                 _ = context;
                 if (args.len != 2)
@@ -319,7 +319,7 @@ fn run(options: RunCLI, files: []const []const u8) !u8 {
     }
 
     if (options.benchmark == false) {
-        var vm = try lola.runtime.VM.init(allocator, &env);
+        var vm = try lux.runtime.VM.init(allocator, &env);
         defer vm.deinit();
 
         while (true) {
@@ -365,14 +365,14 @@ fn run(options: RunCLI, files: []const []const u8) !u8 {
         }
     } else {
         var cycle: usize = 0;
-        var stats = lola.runtime.VM.Statistics{};
+        var stats = lux.runtime.VM.Statistics{};
         var total_time: u64 = 0;
 
         var total_timer = try std.time.Timer.start();
 
         // Run at least one second
         while ((cycle < 100) or (total_timer.read() < std.time.ns_per_s)) : (cycle += 1) {
-            var vm = try lola.runtime.VM.init(allocator, &env);
+            var vm = try lux.runtime.VM.init(allocator, &env);
             defer vm.deinit();
 
             var timer = try std.time.Timer.start();
@@ -433,7 +433,7 @@ fn run(options: RunCLI, files: []const []const u8) !u8 {
     return 0;
 }
 
-fn compileFileToUnit(allocator: std.mem.Allocator, fileName: []const u8) !lola.CompileUnit {
+fn compileFileToUnit(allocator: std.mem.Allocator, fileName: []const u8) !lux.CompileUnit {
     const maxLength = 1 << 20; // 1 MB
     var source = blk: {
         var file = try std.fs.cwd().openFile(fileName, .{ .mode = .read_only });
@@ -443,7 +443,7 @@ fn compileFileToUnit(allocator: std.mem.Allocator, fileName: []const u8) !lola.C
     };
     defer gpa.free(source);
 
-    var diag = lola.compiler.Diagnostics.init(allocator);
+    var diag = lux.compiler.Diagnostics.init(allocator);
     defer {
         for (diag.messages.items) |msg| {
             std.debug.print("{}\n", .{msg});
@@ -451,26 +451,26 @@ fn compileFileToUnit(allocator: std.mem.Allocator, fileName: []const u8) !lola.C
         diag.deinit();
     }
 
-    const seq = try lola.compiler.tokenizer.tokenize(allocator, &diag, fileName, source);
+    const seq = try lux.compiler.tokenizer.tokenize(allocator, &diag, fileName, source);
     defer allocator.free(seq);
 
-    var pgm = try lola.compiler.parser.parse(allocator, &diag, seq);
+    var pgm = try lux.compiler.parser.parse(allocator, &diag, seq);
     defer pgm.deinit();
 
-    const successful = try lola.compiler.validate(allocator, &diag, pgm);
+    const successful = try lux.compiler.validate(allocator, &diag, pgm);
 
     if (!successful)
         return error.CompileError;
 
-    var compile_unit = try lola.compiler.generateIR(allocator, pgm, fileName);
+    var compile_unit = try lux.compiler.generateIR(allocator, pgm, fileName);
     errdefer compile_unit;
 
     return compile_unit;
 }
 
-fn loadModuleFromFile(allocator: std.mem.Allocator, fileName: []const u8) !lola.CompileUnit {
+fn loadModuleFromFile(allocator: std.mem.Allocator, fileName: []const u8) !lux.CompileUnit {
     var file = try std.fs.cwd().openFile(fileName, .{ .mode = .read_only });
     defer file.close();
 
-    return try lola.CompileUnit.loadFromStream(allocator, file.reader());
+    return try lux.CompileUnit.loadFromStream(allocator, file.reader());
 }

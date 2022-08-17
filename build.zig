@@ -4,7 +4,7 @@ const Builder = std.build.Builder;
 
 pub fn createPackage(comptime root: []const u8) std.build.Pkg {
     return std.build.Pkg{
-        .name = "lola",
+        .name = "lux",
         .path = .{ .path = root ++ "/src/library/main.zig" },
         .dependencies = &[_]std.build.Pkg{
             std.build.Pkg{
@@ -34,8 +34,8 @@ const pkgs = struct {
         .dependencies = &[_]std.build.Pkg{},
     };
 
-    const lola = std.build.Pkg{
-        .name = "lola",
+    const lux = std.build.Pkg{
+        .name = "lux",
         .source = .{ .path = "src/library/main.zig" },
         .dependencies = &[_]std.build.Pkg{ interface, any_pointer },
     };
@@ -79,7 +79,7 @@ const examples = [_]Example{
 };
 
 pub fn build(b: *Builder) !void {
-    const version_tag = b.option([]const u8, "version", "Sets the version displayed in the docs and for `lola version`");
+    const version_tag = b.option([]const u8, "version", "Sets the version displayed in the docs and for `lux version`");
 
     const mode = b.standardReleaseOptions();
     const target = b.standardTargetOptions(.{});
@@ -87,10 +87,10 @@ pub fn build(b: *Builder) !void {
     const build_options = b.addOptions();
     build_options.addOption([]const u8, "version", version_tag orelse "development");
 
-    const exe = b.addExecutable("lola", "src/frontend/main.zig");
+    const exe = b.addExecutable("lux", "src/frontend/main.zig");
     exe.setBuildMode(mode);
     exe.setTarget(target);
-    exe.addPackage(pkgs.lola);
+    exe.addPackage(pkgs.lux);
     exe.addPackage(pkgs.args);
     exe.addPackage(build_options.getPackage("build_options"));
     exe.install();
@@ -122,7 +122,7 @@ pub fn build(b: *Builder) !void {
     for (benchmark_modes) |benchmark_mode| {
         const benchmark = b.addExecutable(b.fmt("benchmark-{s}", .{@tagName(benchmark_mode)}), "src/benchmark/perf.zig");
         benchmark.setBuildMode(benchmark_mode);
-        benchmark.addPackage(pkgs.lola);
+        benchmark.addPackage(pkgs.lux);
 
         const run_benchmark = benchmark.run();
         run_benchmark.addArg(b.pathFromRoot("benchmarks/code"));
@@ -131,8 +131,8 @@ pub fn build(b: *Builder) !void {
         render_benchmark.step.dependOn(&run_benchmark.step);
     }
 
-    const wasm_runtime = b.addSharedLibrary("lola", "src/wasm-compiler/main.zig", .unversioned);
-    wasm_runtime.addPackage(pkgs.lola);
+    const wasm_runtime = b.addSharedLibrary("lux", "src/wasm-compiler/main.zig", .unversioned);
+    wasm_runtime.addPackage(pkgs.lux);
     wasm_runtime.setTarget(.{ .cpu_arch = .wasm32, .os_tag = .freestanding });
     wasm_runtime.setBuildMode(.ReleaseSafe);
     wasm_runtime.install();
@@ -142,13 +142,13 @@ pub fn build(b: *Builder) !void {
         const example_exe = b.addExecutable("example-" ++ example.name, example.path);
         example_exe.setBuildMode(mode);
         example_exe.setTarget(target);
-        example_exe.addPackage(pkgs.lola);
+        example_exe.addPackage(pkgs.lux);
 
         examples_step.dependOn(&b.addInstallArtifact(example_exe).step);
     }
 
     var main_tests = b.addTest("src/library/test.zig");
-    if (pkgs.lola.dependencies) |deps| {
+    if (pkgs.lux.dependencies) |deps| {
         for (deps) |pkg| {
             main_tests.addPackage(pkg);
         }
@@ -165,13 +165,13 @@ pub fn build(b: *Builder) !void {
         const behaviour_tests = exe.run();
         behaviour_tests.addArg("run");
         behaviour_tests.addArg("--no-stdlib"); // we don't want the behaviour tests to be run with any stdlib functions
-        behaviour_tests.addArg(prefix ++ "behaviour.lola");
+        behaviour_tests.addArg(prefix ++ "behaviour.lux");
         behaviour_tests.expectStdOutEqual("Behaviour test suite passed.\n");
         test_step.dependOn(&behaviour_tests.step);
 
         const stdib_test = exe.run();
         stdib_test.addArg("run");
-        stdib_test.addArg(prefix ++ "stdlib.lola");
+        stdib_test.addArg(prefix ++ "stdlib.lux");
         stdib_test.expectStdOutEqual("Standard library test suite passed.\n");
         test_step.dependOn(&stdib_test.step);
 
@@ -204,33 +204,33 @@ pub fn build(b: *Builder) !void {
             );
 
             runlib_test.addArg("run");
-            runlib_test.addArg("../../" ++ prefix ++ "runtime.lola");
+            runlib_test.addArg("../../" ++ prefix ++ "runtime.lux");
 
             test_step.dependOn(&runlib_test.step);
         }
 
         const emptyfile_test = exe.run();
         emptyfile_test.addArg("run");
-        emptyfile_test.addArg(prefix ++ "empty.lola");
+        emptyfile_test.addArg(prefix ++ "empty.lux");
         emptyfile_test.expectStdOutEqual("");
         test_step.dependOn(&emptyfile_test.step);
 
         const globreturn_test = exe.run();
         globreturn_test.addArg("run");
-        globreturn_test.addArg(prefix ++ "global-return.lola");
+        globreturn_test.addArg(prefix ++ "global-return.lux");
         globreturn_test.expectStdOutEqual("");
         test_step.dependOn(&globreturn_test.step);
 
         const extended_behaviour_test = exe.run();
         extended_behaviour_test.addArg("run");
-        extended_behaviour_test.addArg(prefix ++ "behaviour-with-stdlib.lola");
+        extended_behaviour_test.addArg(prefix ++ "behaviour-with-stdlib.lux");
         extended_behaviour_test.expectStdOutEqual("Extended behaviour test suite passed.\n");
         test_step.dependOn(&extended_behaviour_test.step);
 
         const compiler_test = exe.run();
         compiler_test.addArg("compile");
         compiler_test.addArg("--verify"); // verify should not emit a compiled module
-        compiler_test.addArg(prefix ++ "compiler.lola");
+        compiler_test.addArg(prefix ++ "compiler.lux");
         compiler_test.expectStdOutEqual("");
         test_step.dependOn(&compiler_test.step);
     }
@@ -263,7 +263,7 @@ pub fn build(b: *Builder) !void {
         copy_wasm_runtime.addArg("website/lux.wasm");
         gen_website_step.dependOn(&copy_wasm_runtime.step);
 
-        var gen_docs_runner = b.addTest(pkgs.lola.source.path);
+        var gen_docs_runner = b.addTest(pkgs.lux.source.path);
         gen_docs_runner.emit_bin = .no_emit;
         gen_docs_runner.emit_asm = .no_emit;
         gen_docs_runner.emit_bin = .no_emit;

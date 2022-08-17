@@ -12,7 +12,7 @@ pub usingnamespace common;
 pub const Decoder = @import("common/Decoder.zig");
 pub const CompileUnit = @import("common/CompileUnit.zig");
 
-/// Contains functions and structures for executing LoLa code.
+/// Contains functions and structures for executing Lux code.
 pub const runtime = struct {
     usingnamespace @import("runtime/value.zig");
     pub const Environment = @import("runtime/Environment.zig");
@@ -30,10 +30,10 @@ pub const runtime = struct {
     pub const AsyncUserFunctionCall = Environment.AsyncUserFunctionCall;
 };
 
-/// LoLa libraries that provide pre-defined functions and variables.
+/// Lux libraries that provide pre-defined functions and variables.
 pub const libs = @import("libraries/libs.zig");
 
-/// Contains functions and structures to compile LoLa code.
+/// Contains functions and structures to compile Lux code.
 pub const compiler = struct {
     pub const Diagnostics = @import("compiler/diagnostics.zig").Diagnostics;
     pub const Location = @import("compiler/location.zig").Location;
@@ -44,11 +44,11 @@ pub const compiler = struct {
     pub const validate = @import("compiler/analysis.zig").validate;
     pub const generateIR = @import("compiler/codegen.zig").generateIR;
 
-    /// Compiles a LoLa source code into a CompileUnit.
+    /// Compiles a Lux source code into a CompileUnit.
     /// - `allocator` is used to perform all allocations in the compilation process.
     /// - `diagnostics` will contain all diagnostic messages after compilation.
     /// - `chunk_name` is the name of the source code piece. This is the name that will be used to refer to chunk in error messages, it is usually the file name.
-    /// - `source_code` is the LoLa source code that should be compiled.
+    /// - `source_code` is the Lux source code that should be compiled.
     /// The function returns either a compile unit when `source_code` is a valid program, otherwise it will return `null`.
     pub fn compile(
         allocator: zig_std.mem.Allocator,

@@ -1,14 +1,14 @@
-//! This tool measures LoLa performance by running a set of different benchmark files
+//! This tool measures Lux performance by running a set of different benchmark files
 
 const std = @import("std");
 const builtin = @import("builtin");
-const lola = @import("lola");
+const lux = @import("lux");
 
 // This is required for the runtime library to be able to provide
 // object implementations.
-pub const ObjectPool = lola.runtime.ObjectPool([_]type{
-    lola.libs.runtime.LoLaDictionary,
-    lola.libs.runtime.LoLaList,
+pub const ObjectPool = lux.runtime.ObjectPool([_]type{
+    lux.libs.runtime.LuxDictionary,
+    lux.libs.runtime.LuxList,
 });
 
 pub fn main() !u8 {
@@ -138,7 +138,7 @@ const Benchmark = struct {
 
         const compile_start = std.time.nanoTimestamp();
 
-        var diagnostics = lola.compiler.Diagnostics.init(allocator);
+        var diagnostics = lux.compiler.Diagnostics.init(allocator);
         defer {
             for (diagnostics.messages.items) |msg| {
                 std.debug.print("{}\n", .{msg});
@@ -147,10 +147,10 @@ const Benchmark = struct {
         }
 
         // This compiles a piece of source code into a compile unit.
-        // A compile unit is a piece of LoLa IR code with metadata for
+        // A compile unit is a piece of Lux IR code with metadata for
         // all existing functions, debug symbols and so on. It can be loaded into
         // a environment and be executed.
-        var compile_unit = (try lola.compiler.compile(allocator, &diagnostics, self.file_name, self.source_code)) orelse return error.SyntaxError;
+        var compile_unit = (try lux.compiler.compile(allocator, &diagnostics, self.file_name, self.source_code)) orelse return error.SyntaxError;
         defer compile_unit.deinit();
 
         const setup_start = std.time.nanoTimestamp();
@@ -159,13 +159,13 @@ const Benchmark = struct {
         var pool = ObjectPool.init(allocator);
         defer pool.deinit();
 
-        var env = try lola.runtime.Environment.init(allocator, &compile_unit, pool.interface());
+        var env = try lux.runtime.Environment.init(allocator, &compile_unit, pool.interface());
         defer env.deinit();
 
-        try env.installModule(lola.libs.std, lola.runtime.Context.null_pointer);
-        try env.installModule(lola.libs.runtime, lola.runtime.Context.null_pointer);
+        try env.installModule(lux.libs.std, lux.runtime.Context.null_pointer);
+        try env.installModule(lux.libs.runtime, lux.runtime.Context.null_pointer);
 
-        var vm = try lola.runtime.VM.init(allocator, &env);
+        var vm = try lux.runtime.VM.init(allocator, &env);
         defer vm.deinit();
 
         const runtime_start = std.time.nanoTimestamp();

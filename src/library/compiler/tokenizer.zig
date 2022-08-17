@@ -413,7 +413,7 @@ test "Tokenizer invalid bytes" {
 }
 
 test "Tokenizer (tokenize compiler test suite)" {
-    var tokenizer = Tokenizer.init("src/test/compiler.lola", @embedFile("../../test/compiler.lola"));
+    var tokenizer = Tokenizer.init("src/test/compiler.lux", @embedFile("../../test/compiler.lux"));
 
     while (true) {
         switch (tokenizer.next()) {

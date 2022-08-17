@@ -1,9 +1,9 @@
 // this path is mainly to provide a neat test environment
 
-const lola = @import("main.zig");
+const lux = @import("main.zig");
 
 comptime {
-    _ = lola;
+    _ = lux;
 }
 
-pub const ObjectPool = lola.runtime.ObjectPool(.{});
+pub const ObjectPool = lux.runtime.ObjectPool(.{});

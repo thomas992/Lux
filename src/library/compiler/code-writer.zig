@@ -9,7 +9,7 @@ const InstructionName = @import("../common/ir.zig").InstructionName;
 pub const Label = enum(u32) { _ };
 
 /// A append-only data structure that allows emission of data and instructions to create
-/// LoLa byte code.
+/// Lux byte code.
 pub const CodeWriter = struct {
     const Self = @This();
 

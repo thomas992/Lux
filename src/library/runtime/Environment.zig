@@ -6,7 +6,7 @@
 const std = @import("std");
 const iface = @import("interface");
 const AnyPointer = @import("any-pointer").AnyPointer;
-const logger = std.log.scoped(.lola);
+const logger = std.log.scoped(.lux);
 
 // Import modules to reduce file size
 const value_unit = @import("value.zig");
@@ -137,7 +137,7 @@ fn isCompatibleFunctionSignature(comptime Destination: type, comptime Queried: t
     return true;
 }
 
-/// Installs a LoLa module.
+/// Installs a Lux module.
 /// Modules are containers that contain public functions with either a 
 /// `UserFunctionCall` or `AsyncUserFunctionCall` signature.
 /// Every other function is ignored (and a debug log is generated).
@@ -190,7 +190,7 @@ pub fn installFunction(self: *Environment, name: []const u8, function: Function)
     result.value_ptr.* = function;
 }
 
-// Implementation to make a Environment a valid LoLa object:
+// Implementation to make a Environment a valid Lux object:
 pub fn getMethod(self: *Environment, name: []const u8) ?Function {
     if (self.functions.get(name)) |fun| {
         var mut_fun = fun;
@@ -476,7 +476,7 @@ pub const Function = union(enum) {
                     bool => try value.toBoolean(),
                     []const u8 => value.toString(),
 
-                    // LoLa types
+                    // Lux types
                     ObjectHandle => try value.toObject(),
                     String => if (value == .string)
                         value.string
@@ -492,7 +492,7 @@ pub const Function = union(enum) {
         }
     }
 
-    fn convertToLoLaValue(allocator: std.mem.Allocator, value: anytype) !Value {
+    fn convertToLuxValue(allocator: std.mem.Allocator, value: anytype) !Value {
         const T = @TypeOf(value);
         const info = @typeInfo(T);
         if (info == .Int)
@@ -501,12 +501,12 @@ pub const Function = union(enum) {
             return Value.initNumber(value);
         if (info == .Optional) {
             if (value) |unwrapped|
-                return try convertToLoLaValue(allocator, unwrapped);
+                return try convertToLuxValue(allocator, unwrapped);
             return .void;
         }
 
         if (info == .ErrorUnion) {
-            return try convertToLoLaValue(allocator, try value);
+            return try convertToLuxValue(allocator, try value);
         }
         if (info == .ErrorSet) {
             return value;
@@ -518,7 +518,7 @@ pub const Function = union(enum) {
             bool => Value.initBoolean(value),
             []const u8 => try Value.initString(allocator, value),
 
-            // LoLa types
+            // Lux types
             ObjectHandle => Value.initObject(value),
             String => Value.fromString(value),
             Array => Value.fromArray(value),
@@ -529,20 +529,20 @@ pub const Function = union(enum) {
         };
     }
 
-    /// Wraps a native zig function into a LoLa function.
+    /// Wraps a native zig function into a Lux function.
     /// The function may take any number of arguments of supported types and return one of those as well.
     /// Supported types are:
-    /// - `lola.runtime.Value`
-    /// - `lola.runtime.String`
-    /// - `lola.runtime.Array`
-    /// - `lola.runtime.ObjectHandle`
+    /// - `lux.runtime.Value`
+    /// - `lux.runtime.String`
+    /// - `lux.runtime.Array`
+    /// - `lux.runtime.ObjectHandle`
     /// - any integer type
     /// - any floating point type
     /// - `bool`
     /// - `void`
     /// - `[]const u8`
     /// Note that when you receive arguments, you don't own them. Do not free or store String or Array values.
-    /// When you return a String or Array, you hand over ownership of that value to the LoLa vm.
+    /// When you return a String or Array, you hand over ownership of that value to the Lux vm.
     pub fn wrap(comptime function: anytype) Function {
         const F = @TypeOf(function);
         const info = @typeInfo(F);
@@ -588,7 +588,7 @@ pub const Function = union(enum) {
                 else
                     @call(.{}, function, zig_args);
 
-                return try convertToLoLaValue(env.allocator, result);
+                return try convertToLuxValue(env.allocator, result);
             }
         };
 
@@ -637,7 +637,7 @@ pub const Function = union(enum) {
                 else
                     @call(.{}, function, zig_args);
 
-                return try convertToLoLaValue(env.allocator, result);
+                return try convertToLuxValue(env.allocator, result);
             }
         };
 

@@ -1,19 +1,19 @@
 const std = @import("std");
-const lola = @import("lola");
+const lux = @import("lux");
 
 // This is our global object pool that is back-referenced
 // by the runtime library.
-pub const ObjectPool = lola.runtime.ObjectPool([_]type{
-    lola.libs.runtime.LoLaList,
-    lola.libs.runtime.LoLaDictionary,
+pub const ObjectPool = lux.runtime.ObjectPool([_]type{
+    lux.libs.runtime.LuxList,
+    lux.libs.runtime.LuxDictionary,
 });
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 var allocator: std.mem.Allocator = gpa.allocator();
-var compile_unit: lola.CompileUnit = undefined;
+var compile_unit: lux.CompileUnit = undefined;
 var pool: ObjectPool = undefined;
-var environment: lola.runtime.Environment = undefined;
-var vm: lola.runtime.VM = undefined;
+var environment: lux.runtime.Environment = undefined;
+var vm: lux.runtime.VM = undefined;
 var is_done: bool = true;
 
 pub fn milliTimestamp() usize {
@@ -54,14 +54,14 @@ const API = struct {
     var debug_writer_lf = std.io.Writer(void, error{}, writeLogNL){ .context = {} };
 
     fn validate(source: []const u8) !void {
-        var diagnostics = lola.compiler.Diagnostics.init(allocator);
+        var diagnostics = lux.compiler.Diagnostics.init(allocator);
         defer diagnostics.deinit();
 
         // This compiles a piece of source code into a compile unit.
-        // A compile unit is a piece of LoLa IR code with metadata for
+        // A compile unit is a piece of Lux IR code with metadata for
         // all existing functions, debug symbols and so on. It can be loaded into
         // a environment and be executed.
-        var temp_compile_unit = try lola.compiler.compile(allocator, &diagnostics, "code", source);
+        var temp_compile_unit = try lux.compiler.compile(allocator, &diagnostics, "code", source);
 
         for (diagnostics.messages.items) |msg| {
             std.fmt.format(debug_writer_lf, "{}\n", .{msg}) catch unreachable;
@@ -72,10 +72,10 @@ const API = struct {
     }
 
     fn initInterpreter(source: []const u8) !void {
-        var diagnostics = lola.compiler.Diagnostics.init(allocator);
+        var diagnostics = lux.compiler.Diagnostics.init(allocator);
         diagnostics.deinit();
 
-        const compile_unit_or_none = try lola.compiler.compile(allocator, &diagnostics, "code", source);
+        const compile_unit_or_none = try lux.compiler.compile(allocator, &diagnostics, "code", source);
 
         for (diagnostics.messages.items) |msg| {
             std.fmt.format(debug_writer_lf, "{}\n", .{msg}) catch unreachable;
@@ -87,14 +87,14 @@ const API = struct {
         pool = ObjectPool.init(allocator);
         errdefer pool.deinit();
 
-        environment = try lola.runtime.Environment.init(allocator, &compile_unit, pool.interface());
+        environment = try lux.runtime.Environment.init(allocator, &compile_unit, pool.interface());
         errdefer environment.deinit();
 
-        try environment.installModule(lola.libs.std, lola.runtime.Context.null_pointer);
-        // try lola.libs.runtime.install(&environment, allocator);
+        try environment.installModule(lux.libs.std, lux.runtime.Context.null_pointer);
+        // try lux.libs.runtime.install(&environment, allocator);
 
-        try environment.installFunction("Print", lola.runtime.Function.initSimpleUser(struct {
-            fn Print(_environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        try environment.installFunction("Print", lux.runtime.Function.initSimpleUser(struct {
+            fn Print(_environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
                 _ = _environment;
                 _ = context;
                 // const allocator = context.get(std.mem.Allocator);
@@ -109,8 +109,8 @@ const API = struct {
             }
         }.Print));
 
-        try environment.installFunction("Write", lola.runtime.Function.initSimpleUser(struct {
-            fn Write(_environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        try environment.installFunction("Write", lux.runtime.Function.initSimpleUser(struct {
+            fn Write(_environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
                 _ = _environment;
                 _ = context;
                 // const allocator = context.get(std.mem.Allocator);
@@ -124,8 +124,8 @@ const API = struct {
             }
         }.Write));
 
-        try environment.installFunction("Read", lola.runtime.Function.initSimpleUser(struct {
-            fn Read(_environment: *const lola.runtime.Environment, context: lola.runtime.Context, args: []const lola.runtime.Value) anyerror!lola.runtime.Value {
+        try environment.installFunction("Read", lux.runtime.Function.initSimpleUser(struct {
+            fn Read(_environment: *const lux.runtime.Environment, context: lux.runtime.Context, args: []const lux.runtime.Value) anyerror!lux.runtime.Value {
                 _ = _environment;
                 _ = context;
                 if (args.len != 0)
@@ -142,14 +142,14 @@ const API = struct {
                     try buffer.appendSlice(temp[0..len]);
                 }
 
-                return lola.runtime.Value.fromString(lola.runtime.String.initFromOwned(
+                return lux.runtime.Value.fromString(lux.runtime.String.initFromOwned(
                     allocator,
                     buffer.toOwnedSlice(),
                 ));
             }
         }.Read));
 
-        vm = try lola.runtime.VM.init(allocator, &environment);
+        vm = try lux.runtime.VM.init(allocator, &environment);
         errdefer vm.deinit();
 
         is_done = false;
@@ -172,11 +172,11 @@ const API = struct {
         // Run the virtual machine for up to 150 instructions
         var result = vm.execute(steps) catch |err| {
             // When the virtua machine panics, we receive a Zig error
-            try std.fmt.format(debug_writer_lf, "\x1B[91mLoLa Panic: {s}\x1B[m\n", .{@errorName(err)});
+            try std.fmt.format(debug_writer_lf, "\x1B[91mLux Panic: {s}\x1B[m\n", .{@errorName(err)});
 
             try vm.printStackTrace(debug_writer_lf);
 
-            return error.LoLaPanic;
+            return error.LuxPanic;
         };
 
         // Prepare a garbage collection cycle:
@@ -228,7 +228,7 @@ const exports = struct {
         allocator.free(mem[0..len]);
     }
 
-    const LoLaError = error{
+    const LuxError = error{
         OutOfMemory,
         FailedToCompile,
         SyntaxError,
@@ -242,14 +242,14 @@ const exports = struct {
         VariableNotFound,
         InvalidStoreTarget,
 
-        LoLaPanic,
+        LuxPanic,
 
         AlreadyExists,
         InvalidObject,
 
         InvalidInterpreterState,
     };
-    fn mapError(err: LoLaError) u8 {
+    fn mapError(err: LuxError) u8 {
         return switch (err) {
             error.OutOfMemory => 1,
             error.FailedToCompile => 2,
@@ -264,7 +264,7 @@ const exports = struct {
             error.VariableNotFound => 3,
             error.InvalidStoreTarget => 3,
             error.AlreadyExists => 3,
-            error.LoLaPanic => 4,
+            error.LuxPanic => 4,
             error.InvalidObject => 5,
             error.InvalidInterpreterState => 6,
         };

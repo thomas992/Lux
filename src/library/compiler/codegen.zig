@@ -134,7 +134,7 @@ fn emitExpression(debug_symbols: *DebugSyms, scope: *Scope, writer: *CodeWriter,
         },
 
         .method_call => |call| {
-            // TODO: Write code in compiler.lola that covers this path.
+            // TODO: Write code in compiler.lux that covers this path.
             var i: usize = call.arguments.len;
             while (i > 0) {
                 i -= 1;
@@ -440,7 +440,7 @@ test "code generation" {
     var diagnostics = Diagnostics.init(std.testing.allocator);
     defer diagnostics.deinit();
 
-    const seq = try @import("tokenizer.zig").tokenize(std.testing.allocator, &diagnostics, "src/test/compiler.lola", @embedFile("../../test/compiler.lola"));
+    const seq = try @import("tokenizer.zig").tokenize(std.testing.allocator, &diagnostics, "src/test/compiler.lux", @embedFile("../../test/compiler.lux"));
     defer std.testing.allocator.free(seq);
 
     var pgm = try @import("parser.zig").parse(std.testing.allocator, &diagnostics, seq);

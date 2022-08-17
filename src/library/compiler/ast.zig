@@ -137,7 +137,7 @@ pub const Function = struct {
 };
 
 /// Root node of the abstract syntax tree,
-/// contains a whole LoLa file.
+/// contains a whole Lux file.
 pub const Program = struct {
     const Self = @This();
 

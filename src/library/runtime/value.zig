@@ -13,7 +13,7 @@ pub const TypeId = enum(u8) {
     enumerator = 6,
 };
 
-/// A struct that represents any possible LoLa value.
+/// A struct that represents any possible Lux value.
 pub const Value = union(TypeId) {
     const Self = @This();
 
@@ -202,7 +202,7 @@ pub const Value = union(TypeId) {
         try stream.writeAll(" ]");
     }
 
-    /// Prints a LoLa value to the given stream.
+    /// Prints a Lux value to the given stream.
     pub fn format(value: Self, comptime fmt: []const u8, options: std.fmt.FormatOptions, stream: anytype) !void {
         _ = fmt;
         _ = options;

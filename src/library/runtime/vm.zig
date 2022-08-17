@@ -1,5 +1,5 @@
 const std = @import("std");
-const lola = @import("../main.zig");
+const lux = @import("../main.zig");
 
 const value_unit = @import("value.zig");
 const Value = value_unit.Value;
@@ -24,7 +24,7 @@ pub const ExecutionResult = enum {
 };
 
 /// Executor of a compile unit. This virtual machine will
-/// execute LoLa instructions.
+/// execute Lux instructions.
 pub const VM = struct {
     const Self = @This();
 
@@ -838,7 +838,7 @@ pub const VM = struct {
         }
     }
 
-    pub fn serialize(self: Self, envmap: *lola.runtime.EnvironmentMap, stream: anytype) !void {
+    pub fn serialize(self: Self, envmap: *lux.runtime.EnvironmentMap, stream: anytype) !void {
         if (self.currentAsynCall != null)
             return error.NotSupportedYet; // we cannot serialize async function that are in-flight atm
 
@@ -864,7 +864,7 @@ pub const VM = struct {
         }
     }
 
-    pub fn deserialize(allocator: std.mem.Allocator, envmap: *lola.runtime.EnvironmentMap, stream: anytype) !Self {
+    pub fn deserialize(allocator: std.mem.Allocator, envmap: *lux.runtime.EnvironmentMap, stream: anytype) !Self {
         const stack_size = try stream.readIntLittle(u64);
         const call_size = try stream.readIntLittle(u64);
 
