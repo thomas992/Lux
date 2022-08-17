@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lux Documentation</title>
+  <link rel="icon"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgklEQVR4AWMYWuD7EllJIM4G4g4g5oIJ/odhOJ8wToOxSTXgNxDHoeiBMfA4+wGShjyYOCkG/IGqWQziEzYAoUAeiF9D5U+DxEg14DRU7jWIT5IBIOdCxf+A+CQZAAoopEB7QJwBCBwHiip8UYmRdrAlDpIMgApwQZNnNii5Dq0MBgCxxycBnwEd+wAAAABJRU5ErkJggg==">
+  <link rel="stylesheet" href="../documentation.css" />
+</head>
+
+<body class="canvas">
+  <div class="flex-main">
+    <div class="flex-filler"></div>
+    <div class="flex-left sidebar">
+      <nav>
+        <div class="logo">
+          <img src="../img/logo.png" />
+        </div>
+        <div id="sectPkgs" class="">
+          <h2><span>Documents</span></h2>
+          <ul id="listPkgs" class="packages"><li><a href="language.htm" >Language Reference</a></li>
+<li><a href="standard-library.htm" >Standard Library</a></li>
+<li><a href="runtime-library.htm" >Runtime Library</a></li>
+<li><a href="intermediate-language.htm" class="active">IR</a></li>
+<li><a href="module-binary.htm" >Module Format</a></li>
+          </ul>
+        </div>
+        <div id="sectInfo" class="">
+          <h2><span>Lux Version</span></h2>
+          <p class="str" id="tdZigVer">v0.1-5-g72fda94</p>
+        </div>
+      </nav>
+    </div>
+    <div class="flex-right">
+      <div class="wrap">
+        <section class="docs"><h1>Lux Intermedia Language</h1>
+<p>This document describes all available instructions of the Lux intermediate language as well as it's encoding in a binary stream.</p>
+<h2>Instructions</h2>
+<p>The following list contains each instruction and describes it's effects on the virtual machine state.</p>
+<ul>
+<li><code>nop</code> No operation</li>
+<li><code>store_global_name</code> stores global variable by name <code>[ var:str ]</code>
+<ul>
+<li>pops a value and stores it in the environment-global <code>str</code></li>
+</ul>
+</li>
+<li><code>load_global_name</code> loads global variable by name <code>[ var:str ]</code>
+<ul>
+<li>pushes a value stored in the environment-global <code>str</code></li>
+</ul>
+</li>
+<li><code>push_str</code> pushes string literal  <code>[ val:str ]</code>
+<ul>
+<li>pushes the string <code>str</code></li>
+</ul>
+</li>
+<li><code>push_num</code> pushes number literal  <code>[ val:f64 ]</code>
+<ul>
+<li>pushes the number <code>val</code></li>
+</ul>
+</li>
+<li><code>array_pack</code> packs <em>num</em> elements into an array <code>[ num:u16 ]</code>
+<ul>
+<li>pops <code>num</code> elements front-to-back and packs them into an array front to back</li>
+<li>stack top will be the first element</li>
+</ul>
+</li>
+<li><code>call_fn</code> calls a function <code>[ fun:str ] [argc:u8 ]</code>
+<ul>
+<li>pops <code>argc</code> elements front-to-back into the argument list, then calls function <code>fun</code></li>
+<li>stack top will be the first argument</li>
+</ul>
+</li>
+<li><code>call_obj</code> calls an object method <code>[ fun:str ] [argc:u8 ]</code>
+<ul>
+<li>pops the object to call,</li>
+<li>then pops <code>argc</code> elements front-to-back into the argument list,</li>
+<li>then calls function <code>fun</code></li>
+<li>stack top will be the first argument</li>
+</ul>
+</li>
+<li><code>pop</code> destroys stack top
+<ul>
+<li>pops a value and discards it</li>
+</ul>
+</li>
+<li><code>add</code> adds rhs and lhs together
+<ul>
+<li>first pops the right hand side,</li>
+<li>then the left hand side,</li>
+<li>then adds right to left, pushes the result</li>
+</ul>
+</li>
+<li><code>sub</code> subtracts rhs and lhs together
+<ul>
+<li>first pops the right hand side,</li>
+<li>then the left hand side,</li>
+<li>then subtracts right from left, pushes the result</li>
+</ul>
+</li>
+<li><code>mul</code> multiplies rhs and lhs together
+<ul>
+<li>first pops the left hand side,</li>
+<li>then the right hand side,</li>
+<li>then multiplies left and right, pushes the result</li>
+</ul>
+</li>
+<li><code>div</code> divides rhs and lhs together
+<ul>
+<li>first pops the left hand side,</li>
+<li>then the right hand side,</li>
+<li>then divides left by right, pushing the divisor</li>
+</ul>
+</li>
+<li><code>mod</code> modulo division of rhs and lhs
+<ul>
+<li>first pops the left hand side,</li>
+<li>then the right hand side,</li>
+<li>then divides left by right, pushing the module</li>
+<li><code>(-5 % 2) == 1</code></li>
+</ul>
+</li>
+<li><code>bool_and</code> conjunct rhs and lhs
+<ul>
+<li>first pops the left hand side,</li>
+<li>then the right hand side,</li>
+<li>then pushes <code>true</code> when both left and right hand side are <code>true</code></li>
+</ul>
+</li>
+<li><code>bool_or</code> disjuncts rhs and lhs
+<ul>
+<li>first pops the left hand side,</li>
+<li>then the right hand side,</li>
+<li>then pushes <code>true</code> when either of left or right hand side is <code>true</code></li>
+</ul>
+</li>
+<li><code>bool_not</code> logically inverts stack top
+<ul>
+<li>pops a value from the stack</li>
+<li>pushs <code>true</code> if the value was <code>false</code>, otherwise <code>true</code></li>
+</ul>
+</li>
+<li><code>negate</code> arithmetically inverts stack top
+<ul>
+<li>pops a value from the stack</li>
+<li>then pushes the negative value</li>
+</ul>
+</li>
+<li><code>eq</code>
+<ul>
+<li>pops two values from the stack and compares if they are equal</li>
+<li>pushes a boolean containing the result of the comparison</li>
+</ul>
+</li>
+<li><code>neq</code>
+<ul>
+<li>pops two values from the stack and compares if they are not equal</li>
+<li>pushes a boolean containing the result of the comparison</li>
+</ul>
+</li>
+<li><code>less_eq</code>
+<ul>
+<li>first pops the right hand side,</li>
+<li>then the left hand side,</li>
+<li>then pushes <code>true</code> when left hand side is less or equal to the right hand side.</li>
+</ul>
+</li>
+<li><code>greater_eq</code>
+<ul>
+<li>first pops the right hand side,</li>
+<li>then the left hand side,</li>
+<li>then pushes <code>true</code> when left hand side is greater or equal to the right hand side.</li>
+</ul>
+</li>
+<li><code>less</code>
+<ul>
+<li>first pops the right hand side,</li>
+<li>then the left hand side,</li>
+<li>then pushes <code>true</code> when left hand side is less to the right hand side.</li>
+</ul>
+</li>
+<li><code>greater</code>
+<ul>
+<li>first pops the right hand side,</li>
+<li>then the left hand side,</li>
+<li>then pushes <code>true</code> when left hand side is greater to the right hand side.</li>
+</ul>
+</li>
+<li><code>jmp</code> jumps unconditionally <code>[target:u32 ]</code>
+<ul>
+<li>Sets the instruction pointer to <code>target</code></li>
+</ul>
+</li>
+<li><code>jnf</code> jump when not false <code>[target:u32 ]</code>
+<ul>
+<li>Pops a value from the stack</li>
+<li>If that value is <code>true</code>
+<ul>
+<li>Sets the instruction pointer to <code>target</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>iter_make</code>
+<ul>
+<li>Pops an <em>array</em> from the stack</li>
+<li>Creates an <em>iterator</em> over that <em>array</em>.</li>
+<li>Pushes the created <em>iterator</em>.</li>
+</ul>
+</li>
+<li><code>iter_next</code>
+<ul>
+<li>Peeks an <em>iterator</em> from the stack</li>
+<li>If that <em>iterator</em> still has values to yield:
+<ul>
+<li>Push the <em>value</em> from the <em>iterator</em></li>
+<li>Push <code>true</code></li>
+<li>Advance the iterator by 1</li>
+</ul>
+</li>
+<li>else:
+<ul>
+<li>Push <code>false</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>array_store</code>
+<ul>
+<li>Then pops the <em>array</em> from the stack</li>
+<li>Then pops the <em>index</em> from the stack</li>
+<li>Pops the <em>value</em> from the stack</li>
+<li>Stores <em>value</em> at <em>index</em> in <em>array</em></li>
+<li>Pushes <em>array</em> to the stack.</li>
+</ul>
+</li>
+<li><code>array_load</code>
+<ul>
+<li>Pops <em>array</em> from the stack</li>
+<li>Pops <em>index</em> from the stack</li>
+<li>Loads a <em>value</em> from the <em>array</em> at <em>index</em></li>
+<li>Pushes <em>value</em> to the stack</li>
+</ul>
+</li>
+<li><code>ret</code> returns from the current function with Void
+<ul>
+<li>returns from the function call with a <code>void</code> value</li>
+</ul>
+</li>
+<li><code>store_local</code> stores a local variable <code>[index : u16 ]</code>
+<ul>
+<li>Pops a <em>value</em> from the stack</li>
+<li>Stores that <em>value</em> in the function-local variable at <em>index</em>.</li>
+</ul>
+</li>
+<li><code>load_local</code> loads a local variable <code>[index : u16 ]</code>
+<ul>
+<li>Loads a <em>value</em> from the function-local <em>index</em>.</li>
+<li>Pushes that <em>value</em> to the stack.</li>
+</ul>
+</li>
+<li><code>retval</code> returns from the current function with a value
+<ul>
+<li>pops a value from the stack</li>
+<li>returns from the function call with the popped value</li>
+</ul>
+</li>
+<li><code>jif</code> jump when false <code>[ target:u32 ]</code>
+<ul>
+<li>Pops a value from the stack</li>
+<li>If that value is <code>false</code>
+<ul>
+<li>Sets the instruction pointer to <code>target</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>store_global_idx</code> stores global variable by index <code>[ idx:u16 ]</code>
+<ul>
+<li>Pops a value from the stack</li>
+<li>Stores this value in the object-global storage</li>
+</ul>
+</li>
+<li><code>load_global_idx</code> loads global variable by index <code>[ idx:u16 ]</code>
+<ul>
+<li>Loads a value from the object-global storage</li>
+<li>Pushes that value to the stack</li>
+</ul>
+</li>
+<li><code>push_true</code>
+<ul>
+<li>pushes literal boolean <code>true</code></li>
+</ul>
+</li>
+<li><code>push_false</code>
+<ul>
+<li>pushes literal boolean <code>false</code></li>
+</ul>
+</li>
+<li><code>push_void</code>
+<ul>
+<li>pushes void value</li>
+</ul>
+</li>
+</ul>
+<h2>Encoding</h2>
+<h3>Instructions</h3>
+<p>The instructions are encoded in an intermediate language. Each instruction is encoded by a single byte, followed by arguments different for each instruction.</p>
+<p>Argument types are noted in <code>name:type</code> notation where type is one of the following: <code>str</code>, <code>f64</code>, <code>u16</code>, <code>u8</code>, <code>u32</code>. The encoding of these types is described below the table.</p>
+<table>
+<thead>
+<tr>
+<th>Instruction</th>
+<th>Value</th>
+<th>Arguments</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nop</td>
+<td>0</td>
+<td></td>
+<td>No operation</td>
+</tr>
+<tr>
+<td>scope_push</td>
+<td>1</td>
+<td></td>
+<td><em>reserved</em></td>
+</tr>
+<tr>
+<td>scope_pop</td>
+<td>2</td>
+<td></td>
+<td><em>reserved</em></td>
+</tr>
+<tr>
+<td>declare</td>
+<td>3</td>
+<td><code>var:str</code></td>
+<td><em>reserved</em></td>
+</tr>
+<tr>
+<td>store_global_name</td>
+<td>4</td>
+<td><code>var:str</code></td>
+<td>stores global variable by name</td>
+</tr>
+<tr>
+<td>load_global_name</td>
+<td>5</td>
+<td><code>var:str</code></td>
+<td>loads global variable by name</td>
+</tr>
+<tr>
+<td>push_str</td>
+<td>6</td>
+<td><code>val:str</code></td>
+<td>pushes string literal</td>
+</tr>
+<tr>
+<td>push_num</td>
+<td>7</td>
+<td><code>val:f64</code></td>
+<td>pushes number literal</td>
+</tr>
+<tr>
+<td>array_pack</td>
+<td>8</td>
+<td><code>num:u16</code></td>
+<td>packs <em>num</em> elements into an array</td>
+</tr>
+<tr>
+<td>call_fn</td>
+<td>9</td>
+<td><code>fun:str, argc:u8</code></td>
+<td>calls a function</td>
+</tr>
+<tr>
+<td>call_obj</td>
+<td>10</td>
+<td><code>fun:str, argc:u8</code></td>
+<td>calls an object method</td>
+</tr>
+<tr>
+<td>pop</td>
+<td>11</td>
+<td></td>
+<td>destroys stack top</td>
+</tr>
+<tr>
+<td>add</td>
+<td>12</td>
+<td></td>
+<td>adds rhs and lhs together</td>
+</tr>
+<tr>
+<td>sub</td>
+<td>13</td>
+<td></td>
+<td>subtracts rhs and lhs together</td>
+</tr>
+<tr>
+<td>mul</td>
+<td>14</td>
+<td></td>
+<td>multiplies rhs and lhs together</td>
+</tr>
+<tr>
+<td>div</td>
+<td>15</td>
+<td></td>
+<td>divides rhs and lhs together</td>
+</tr>
+<tr>
+<td>mod</td>
+<td>16</td>
+<td></td>
+<td>reminder division of rhs and lhs</td>
+</tr>
+<tr>
+<td>bool_and</td>
+<td>17</td>
+<td></td>
+<td>conjunct rhs and lhs</td>
+</tr>
+<tr>
+<td>bool_or</td>
+<td>18</td>
+<td></td>
+<td>disjuncts rhs and lhs</td>
+</tr>
+<tr>
+<td>bool_not</td>
+<td>19</td>
+<td></td>
+<td>logically inverts stack top</td>
+</tr>
+<tr>
+<td>negate</td>
+<td>20</td>
+<td></td>
+<td>arithmetically inverts stack top</td>
+</tr>
+<tr>
+<td>eq</td>
+<td>21</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>neq</td>
+<td>22</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>less_eq</td>
+<td>23</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>greater_eq</td>
+<td>24</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>less</td>
+<td>25</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>greater</td>
+<td>26</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>jmp</td>
+<td>27</td>
+<td><code>target:u32</code></td>
+<td>jumps unconditionally</td>
+</tr>
+<tr>
+<td>jnf</td>
+<td>28</td>
+<td><code>target:u32</code></td>
+<td>jump when not false</td>
+</tr>
+<tr>
+<td>iter_make</td>
+<td>29</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>iter_next</td>
+<td>30</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>array_store</td>
+<td>31</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>array_load</td>
+<td>32</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ret</td>
+<td>33</td>
+<td></td>
+<td>returns from the current function with Void</td>
+</tr>
+<tr>
+<td>store_local</td>
+<td>34</td>
+<td><code>index:u16</code></td>
+<td></td>
+</tr>
+<tr>
+<td>load_local</td>
+<td>35</td>
+<td><code>index:u16</code></td>
+<td></td>
+</tr>
+<tr>
+<td>retval</td>
+<td>37</td>
+<td></td>
+<td>returns from the current function with a value</td>
+</tr>
+<tr>
+<td>jif</td>
+<td>38</td>
+<td><code>target:u32</code></td>
+<td>jump when false</td>
+</tr>
+<tr>
+<td>store_global_idx</td>
+<td>39</td>
+<td><code>idx:u16</code></td>
+<td>stores global variable by index</td>
+</tr>
+<tr>
+<td>load_global_idx</td>
+<td>40</td>
+<td><code>idx:u16</code></td>
+<td>loads global variable by index</td>
+</tr>
+<tr>
+<td>push_true</td>
+<td>41</td>
+<td></td>
+<td>pushes a boolean <code>true</code></td>
+</tr>
+<tr>
+<td>push_false</td>
+<td>42</td>
+<td></td>
+<td>pushes a boolean <code>false</code></td>
+</tr>
+<tr>
+<td>push_void</td>
+<td>43</td>
+<td></td>
+<td>pushes a <code>void</code> value.</td>
+</tr>
+</tbody>
+</table>
+<h3>Types</h3>
+<h4><code>u8</code>, <code>u16</code>, <code>u32</code></h4>
+<p>Each of these corresponds to a single, little endian encoded unsigned integer with either 8, 16 or 32 bits width.</p>
+<h4><code>f64</code></h4>
+<p>A 64 bit floating point number, encoded with <strong>IEEE 754</strong> <em>binary64</em> format, also known as <code>double</code>.</p>
+<h4><code>str</code></h4>
+<p>A literal string value with a maximum of 65535 bytes length. It's text is encoded in an application-defined encoding where all values below 128 must follow the ASCII encoding scheme. Values equal or above 128 are interpreted by an application-defined logic.</p>
+<p>A string is started by a 16 bit unsigned integer defining the length of the string, followed by <em>length</em> bytes of content.</p>
+<p><strong>Rationale:</strong> The encoding is not fixed to UTF-8 as the language is meant to be embedded into games where a unicode encoding would be a burden to the player. Thus, a string is defined to be &quot;at least&quot; ASCII-compatible and allows UTF-8 encoding, but does not enforce this.</p>
+        </section>
+      </div>
+      <div class="flex-filler"></div>
+    </div>
+  </div>
+</body>
+
+</html>

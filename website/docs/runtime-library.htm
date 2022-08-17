@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lux Documentation</title>
+  <link rel="icon"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgklEQVR4AWMYWuD7EllJIM4G4g4g5oIJ/odhOJ8wToOxSTXgNxDHoeiBMfA4+wGShjyYOCkG/IGqWQziEzYAoUAeiF9D5U+DxEg14DRU7jWIT5IBIOdCxf+A+CQZAAoopEB7QJwBCBwHiip8UYmRdrAlDpIMgApwQZNnNii5Dq0MBgCxxycBnwEd+wAAAABJRU5ErkJggg==">
+  <link rel="stylesheet" href="../documentation.css" />
+</head>
+
+<body class="canvas">
+  <div class="flex-main">
+    <div class="flex-filler"></div>
+    <div class="flex-left sidebar">
+      <nav>
+        <div class="logo">
+          <img src="../img/logo.png" />
+        </div>
+        <div id="sectPkgs" class="">
+          <h2><span>Documents</span></h2>
+          <ul id="listPkgs" class="packages"><li><a href="language.htm" >Language Reference</a></li>
+<li><a href="standard-library.htm" >Standard Library</a></li>
+<li><a href="runtime-library.htm" class="active">Runtime Library</a></li>
+<li><a href="intermediate-language.htm" >IR</a></li>
+<li><a href="module-binary.htm" >Module Format</a></li>
+          </ul>
+        </div>
+        <div id="sectInfo" class="">
+          <h2><span>Lux Version</span></h2>
+          <p class="str" id="tdZigVer">v0.1-5-g72fda94</p>
+        </div>
+      </nav>
+    </div>
+    <div class="flex-right">
+      <div class="wrap">
+        <section class="docs"><h1>Lux Runtime Library</h1>
+<p>This file documents the Lux Runtime Library, a set of basic I/O routines to enable standalone Lux programs.</p>
+<p>The API in this document is meant for the standalone Lux interpreter and functions listed here are not necessarily available in embedded programs!</p>
+<h2>Generic</h2>
+<h3><code>Exit(code: number): noreturn</code></h3>
+<p>This function will stop execution of the program and will return <code>code</code> to the OS.</p>
+<h2>File I/O</h2>
+<h3><code>ReadFile(path: string): string|void</code></h3>
+<p>Reads in the contents of a file located at <code>path</code> as a <code>string</code> or returns <code>void</code> when the file does not exist or the given path is not a file.</p>
+<h3><code>WriteFile(path: string, contents: string): void</code></h3>
+<p>Writes <code>contents</code> to the file located at <code>path</code>. If the file does not exist, it will be created.</p>
+<h3><code>FileExists(path: string): boolean</code></h3>
+<p>Returns <code>true</code> if a file exists at the given <code>path</code>, <code>else</code> otherwise.</p>
+<h2>Console I/O</h2>
+<h3><code>Print(…): void</code></h3>
+<p>Will print every argument to the standard output. All arguments of type <code>string</code> will be printed verbatim, non-<code>string</code> arguments are converted into a human-readable form and will then be printed.</p>
+<p>After all arguments are printed, a line break will be outputted.</p>
+<h3><code>ReadLine(): string|void</code></h3>
+<p>Reads a line of text from the standard input and returns it as a <code>string</code>. If the standard input is in the <em>end of file</em> state, <code>void</code> will be returned.</p>
+<h2>Standard Objects</h2>
+<h3><code>CreateList([init: array]): object</code></h3>
+<p>Returns a new object that implements a dynamic list.</p>
+<p>If <code>init</code> is given, the list will be initialized with the contents of <code>init</code>.</p>
+<p>This list has the following API:</p>
+<h4><code>list.Add(item): void</code></h4>
+<p>Appends a new item to the back of the list.</p>
+<h4><code>list.Remove(item): boolean</code></h4>
+<p>Removes all occurrances of <code>item</code> in the list.</p>
+<h4><code>list.RemoveAt(index): void</code></h4>
+<p>Removes the item at <code>index</code>. Indices start at <code>0</code>. When the index is out of range, nothing will happen.</p>
+<h4><code>list.GetCount(): number</code></h4>
+<p>Returns the current number of elements in the list.</p>
+<h4><code>list.GetItem(index): any</code></h4>
+<p>Returns the item at <code>index</code> or panics with <code>OutOfRange</code>;</p>
+<h4><code>list.SetItem(index, value): void</code></h4>
+<p>Replaces the item at <code>index</code> with <code>value</code>.</p>
+<h4><code>list.ToArray(): array</code></h4>
+<p>Returns the current list as an array.</p>
+<h4><code>list.IndexOf(item): number</code></h4>
+<p>Returns first the index of <code>item</code> in the list or <code>void</code> if the item was not found.</p>
+<h4><code>list.Resize(size): void</code></h4>
+<p>Resizes the list to <code>size</code> items. New items will be set to <code>void</code>.</p>
+<h4><code>list.Clear(): void</code></h4>
+<p>Removes all items from the list.</p>
+<h3><code>CreateDictionary(): object</code></h3>
+<p>Returns a new object that implements a key-value store.</p>
+<h4><code>dict.Get(key): any</code></h4>
+<p>Returns the value associated with <code>key</code> or returns <code>void</code> if <code>key</code> does not have a associated value.</p>
+<h4><code>dict.Set(key, value): void</code></h4>
+<p>Sets the associated value for <code>key</code> to <code>value</code>. If <code>value</code> is <code>void</code>, the key will be removed.</p>
+<h4><code>dict.Remove(key): boolean</code></h4>
+<p>Removes any value associated with <code>key</code>. Returns <code>true</code> when a key was removed else <code>false</code>.</p>
+<h4><code>dict.Contains(key): boolean</code></h4>
+<p>Returns <code>true</code> if the dictionary contains a value associated with <code>key</code>.</p>
+<h4><code>dict.GetKeys(): array</code></h4>
+<p>Returns an array with all keys stored in the dictionary.</p>
+<h4><code>dict.GetValues(): array</code></h4>
+<p>Returns an array with all values stored in the dictionary.</p>
+<h4><code>dict.Clear(): void</code></h4>
+<p>Removes all values from the dictionary.</p>
+<h4><code>dict.GetCount(): number</code></h4>
+<p>Returns the number of keys currently stored in the list.</p>
+        </section>
+      </div>
+      <div class="flex-filler"></div>
+    </div>
+  </div>
+</body>
+
+</html>

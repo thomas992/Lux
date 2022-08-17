@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lux Documentation</title>
+  <link rel="icon"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgklEQVR4AWMYWuD7EllJIM4G4g4g5oIJ/odhOJ8wToOxSTXgNxDHoeiBMfA4+wGShjyYOCkG/IGqWQziEzYAoUAeiF9D5U+DxEg14DRU7jWIT5IBIOdCxf+A+CQZAAoopEB7QJwBCBwHiip8UYmRdrAlDpIMgApwQZNnNii5Dq0MBgCxxycBnwEd+wAAAABJRU5ErkJggg==">
+  <link rel="stylesheet" href="../documentation.css" />
+</head>
+
+<body class="canvas">
+  <div class="flex-main">
+    <div class="flex-filler"></div>
+    <div class="flex-left sidebar">
+      <nav>
+        <div class="logo">
+          <img src="../img/logo.png" />
+        </div>
+        <div id="sectPkgs" class="">
+          <h2><span>Documents</span></h2>
+          <ul id="listPkgs" class="packages"><li><a href="language.htm" class="active">Language Reference</a></li>
+<li><a href="standard-library.htm" >Standard Library</a></li>
+<li><a href="runtime-library.htm" >Runtime Library</a></li>
+<li><a href="intermediate-language.htm" >IR</a></li>
+<li><a href="module-binary.htm" >Module Format</a></li>
+          </ul>
+        </div>
+        <div id="sectInfo" class="">
+          <h2><span>Lux Version</span></h2>
+          <p class="str" id="tdZigVer">v0.1-5-g72fda94</p>
+        </div>
+      </nav>
+    </div>
+    <div class="flex-right">
+      <div class="wrap">
+        <section class="docs"><h1>The Lux Programming Language</h1>
+<h2>Introduction</h2>
+<p>Lux is a small programming language developed to be embedded in games. It's not meant as a scripting language to create games with but as language to be <strong>programmed in the game by the player</strong>.</p>
+<p>The design goals of the language are:</p>
+<ul>
+<li>Easy to learn</li>
+<li>Small set of language features</li>
+<li>No complex features, there are only value types</li>
+<li>Exhaustible execution – Limit how long a certain script run at most in a single script call</li>
+</ul>
+<h2>Hello World</h2>
+<pre><code class="language-js">Print(&quot;Hello, World!&quot;);
+</code></pre>
+<p>As you can see, the <em>Hello World</em>-Program is quite short and expressive. The language itself uses a C-like syntax with semicolons at the end of a statement.</p>
+<p>More <a href="#Examples">Examples</a> can be found at the end of the document.</p>
+<h2>Comments</h2>
+<p>Lux provides only single-line comments:</p>
+<pre><code class="language-js">// This is a comment
+
+Print(&quot;Hello&quot;); // this is a statement, followed by a comment
+</code></pre>
+<p>Everything that is in a comment is ignored by the compiler. A comment is introduced by a double-slash (<code>//</code>) and is ended by a line feed character or the end of the file.</p>
+<h2>Types</h2>
+<p>The language provides a small set of types data can have:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>void</code></td>
+<td>The <code>void</code> type can only have a single value (which is also <code>void</code>) and indicates the absence of a value. Functions that do not return something will return this.</td>
+</tr>
+<tr>
+<td><code>boolean</code></td>
+<td>A truth value, which is either <code>true</code> or <code>false</code>. This type is the result of comparisons and can be passed to conditionals. It is also the input to the <a href="https://en.wikipedia.org/wiki/Boolean_algebra">boolean algebra</a> operators.</td>
+</tr>
+<tr>
+<td><code>number</code></td>
+<td>A <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">IEEE-754 binary64</a> encoded real number. This is the basic type for all algebraic operations.</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td>A <a href="https://en.wikipedia.org/wiki/String_(computer_science)">string</a> in Lux is a sequence of bytes, usually encodes text as <a href="https://en.wikipedia.org/wiki/ASCII">ASCII</a> or <a href="https://en.wikipedia.org/wiki/UTF-8">UTF-8</a>.</td>
+</tr>
+<tr>
+<td><code>object</code></td>
+<td>An object is a thing that has an interface with callable methods.</td>
+</tr>
+<tr>
+<td><code>array</code></td>
+<td>An array is a sequence of arbitrary values.</td>
+</tr>
+</tbody>
+</table>
+<h2>Literals</h2>
+<p>Literals provide a way to create a primitive value in the language. All of the types except <code>object</code> have a literal syntax:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>void</code></td>
+<td><code>void</code> (no other values are allowed)</td>
+</tr>
+<tr>
+<td><code>boolean</code></td>
+<td><code>true</code>, <code>false</code> (no other values are allowed)</td>
+</tr>
+<tr>
+<td><code>number</code></td>
+<td><code>0</code>, <code>1</code>, <code>0.0</code>, <code>10.0</code>, <code>0.25</code>, <code>13.37</code>, …</td>
+</tr>
+<tr>
+<td><code>string</code></td>
+<td><code>&quot;Hello, World!&quot;</code>, <code>&quot;&quot;</code>, <code>&quot;One\nTwo\nThree&quot;</code></td>
+</tr>
+<tr>
+<td><code>array</code></td>
+<td><code>[]</code>, <code>[1,2,3,4,5]</code>, <code>[true, false, void]</code></td>
+</tr>
+</tbody>
+</table>
+<p>Lux also supports character literals. Character literals have the type <code>number</code> and will be equivalent to their unicode codepoint and might be written literally (<code>ö</code>) or with the same rules as string escapes (<code>\xF3</code>):</p>
+<pre><code class="language-js">0x20    == ' '
+0x07    == '\a'
+0x1F4A9 == '💩'
+0xF3    == '\xF3'
+0x1F4A9 == '\xf0\x9f\x92\xa9'
+</code></pre>
+<p>As Lux doesn't enforce utf-8 encoding, all single-byte literals will be copied verbatim, allowing support for any 8-bit encoding. All literals that take up more than a single byte will be assumed utf-8 encoded.</p>
+<h3>String Escape Sequence</h3>
+<p>As strings are contained in double quotes and don't allow to contain a line feed, one needs the possibility to escape those characters. For this, Lux provides two ways to include escaped and non-printable characters in a string:</p>
+<ul>
+<li>Use a hexadecimal escape (<code>\x63</code>)</li>
+<li>Use one of the predefined escape shorthands (<code>\r</code>, <code>\n</code>)</li>
+</ul>
+<p>The hexadecimal escape allows the programmer to embed any byte value into the string. It is introduced by the escape character <code>\</code>, followed by a small <code>x</code>, then a two-digit hexadecimal number. The number is then converted into a byte value and inserted into the string.</p>
+<p>The predefined escape codes provide often-required whitespace and control characters without the need to remember their exact value:</p>
+<table>
+<thead>
+<tr>
+<th>Shorthand</th>
+<th>ASCII Value</th>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\a</code></td>
+<td>7</td>
+<td>Alert / Bell</td>
+</tr>
+<tr>
+<td><code>\b</code></td>
+<td>8</td>
+<td>Backspace</td>
+</tr>
+<tr>
+<td><code>\t</code></td>
+<td>9</td>
+<td>Horizontal Tab</td>
+</tr>
+<tr>
+<td><code>\n</code></td>
+<td>10</td>
+<td>Line Feed</td>
+</tr>
+<tr>
+<td><code>\r</code></td>
+<td>13</td>
+<td>Carriage Return</td>
+</tr>
+<tr>
+<td><code>\e</code></td>
+<td>27</td>
+<td>Escape</td>
+</tr>
+<tr>
+<td><code>\&quot;</code></td>
+<td>34</td>
+<td>Double Quotes</td>
+</tr>
+<tr>
+<td><code>\'</code></td>
+<td>39</td>
+<td>Single Quote</td>
+</tr>
+</tbody>
+</table>
+<h2>Variables</h2>
+<p>Variables provide a way to store something beyond the context of a single computation.</p>
+<pre><code class="language-js">var x;      // Uninitialized, global variable
+var y = 10; // Initialized global variable
+
+{
+  var z;     // Unitialized local variable
+  var w = 0; // Initialized local variable
+}
+</code></pre>
+<p>There are three kind of variables in Lux:</p>
+<ul>
+<li>Global Variables</li>
+<li>Local Variables</li>
+</ul>
+<p>Global variables are accessible from any scope and are stored in the execution environment. <strong>If a global variable has no initializer, it's value is preserved over multiple calls of the script.</strong></p>
+<p>Local variables could also be called temporary variables as they are only alive for a short time. A local variables is any variable declared in brackets, so explicit declared locals, loop variables and function parameters.</p>
+<p>All variables are dynamically typed and may change the type of the stored value on assignment.</p>
+<h3>Shadowing</h3>
+<p>Lux allows shadowing of variable names. This means, that you can have a variable with the same name as a previously declared variable. The previously declared variable will be hidden (shadowed) by the newly declared variable for the scope of the shadowing variable.</p>
+<h2>Operators</h2>
+<p>Lux provides several operators that execute arithmetic, logic or comparison operations.</p>
+<h3>Table of Operators</h3>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Applies to</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a + b</code> <!-- raw HTML omitted --> <code>a += b</code></td>
+<td><code>string</code>, <code>number</code>, <code>array</code></td>
+<td>Adds numbers, concats strings and arrays.</td>
+<td><code>3 + 2 == 5</code>, <code>&quot;a&quot; + &quot;b&quot; == &quot;ab&quot;</code>, <code>[ 1, 2 ] + [ 3 ] == [ 1, 2, 3 ]</code></td>
+</tr>
+<tr>
+<td><code>a - b</code> <!-- raw HTML omitted --><code>a -= b</code></td>
+<td><code>number</code></td>
+<td>Subtraction</td>
+<td><code>5 - 2 == 3</code></td>
+</tr>
+<tr>
+<td><code>-a</code></td>
+<td><code>number</code></td>
+<td>Negation</td>
+<td><code>-(4) == -4</code></td>
+</tr>
+<tr>
+<td><code>a * b</code> <!-- raw HTML omitted --><code>a *= b</code></td>
+<td><code>number</code></td>
+<td>Multiplication</td>
+<td><code>5 * 2 == 10</code></td>
+</tr>
+<tr>
+<td><code>a / b </code><!-- raw HTML omitted --><code>a /= b</code></td>
+<td><code>number</code></td>
+<td>Division</td>
+<td><code>10 / 5 == 2</code></td>
+</tr>
+<tr>
+<td><code>a % b</code> <!-- raw HTML omitted --><code>a %= b</code></td>
+<td><code>number</code></td>
+<td>Remainder Division</td>
+<td><code>10 % 4 == 2</code></td>
+</tr>
+<tr>
+<td><code>a and b</code></td>
+<td><code>boolean</code></td>
+<td>Boolean AND</td>
+<td><code>true and false == false</code></td>
+</tr>
+<tr>
+<td><code>a or b</code></td>
+<td><code>boolean</code></td>
+<td>Boolean OR</td>
+<td><code>true or false == true</code></td>
+</tr>
+<tr>
+<td><code>not a</code></td>
+<td><code>boolean</code></td>
+<td>Boolean NOT</td>
+<td><code>not false == true</code></td>
+</tr>
+<tr>
+<td><code>a == b</code></td>
+<td><em>all</em></td>
+<td>Equality test</td>
+<td><code>(3 == 3) == true</code></td>
+</tr>
+<tr>
+<td><code>a != b</code></td>
+<td><em>all</em></td>
+<td>Inequality test</td>
+<td><code>(3 != 2) == true</code></td>
+</tr>
+<tr>
+<td><code>a &gt;= b</code></td>
+<td><code>number</code></td>
+<td>Greater-or-equal test</td>
+<td><code>(3 &gt;= 2) == true</code></td>
+</tr>
+<tr>
+<td><code>a &lt;= b</code></td>
+<td><code>number</code></td>
+<td>Less-or-equal test</td>
+<td><code>(3 &lt;= 2) == false</code></td>
+</tr>
+<tr>
+<td><code>a &gt; b</code></td>
+<td><code>number</code></td>
+<td>Greater-than test</td>
+<td><code>(3 &gt; 2) == true</code></td>
+</tr>
+<tr>
+<td><code>a &lt; b</code></td>
+<td><code>number</code></td>
+<td>Less-than test</td>
+<td><code>(3 &lt; 2) == false</code></td>
+</tr>
+<tr>
+<td><code>a[i]</code></td>
+<td><code>array</code>, <code>string</code></td>
+<td>Array index, string index</td>
+<td><code>([1,2,3])[1] == 2</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Operator Precedence</h3>
+<p>Operator precedence in the list low to high. A higher precedence means that these operators <em>bind</em> more to the variables and will be applied first.</p>
+<h4>Binary</h4>
+<ul>
+<li><code>and</code>, <code>or</code></li>
+<li><code>==</code>, <code>!=</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&lt;</code></li>
+<li><code>+</code>, <code>-</code></li>
+<li><code>*</code>, <code>/</code>, <code>%</code></li>
+</ul>
+<h4>Unary</h4>
+<ul>
+<li><code>not</code>, <code>-</code></li>
+<li><code>a[i]</code></li>
+</ul>
+<h2>Control Flow Structures</h2>
+<p>Lux provides a small set of control flow structures that are simple to use and are widespread in a lot of programming languages.</p>
+<h3>Blocks</h3>
+<pre><code class="language-js">{ // Blocks are always introduced by a curly bracket
+  var x; // local to this block
+  // here is the block content
+} // and are closed by a curly bracket
+
+// x is not valid here anymore!
+</code></pre>
+<p>Blocks are a convenient way of introducing structure into the code. Each block has its own set of local variables, but can access the local variables of its parent as well. Each control structure in Lux is followed by a block, but blocks can also be freestanding as in the example above.</p>
+<h3>Assignments</h3>
+<p>Assignments in Lux are statements that return no value. This is different from other programming languages like C that allow nesting assignments into expressions (<del><code>a + (b = c)</code></del>).</p>
+<pre><code class="language-js">a = b; // simple assignment, copy the value from b into a.
+</code></pre>
+<p>An assignment will always copy the value that is assigned. It will not create equality of the two names:</p>
+<pre><code class="language-js">a = 1;
+b = a;
+a = 2;
+Print(a, b); // Will print &quot;2, 1&quot; as b has not been changed
+</code></pre>
+<p>You can always assign an item of array:</p>
+<pre><code class="language-js">a[i] = c; // indexed assignment: copy the value of c into the i'th index of the array a.
+</code></pre>
+<p>This allows mutating the contents of the array. The same rules as for a normal variable assignment apply here.</p>
+<h3><code>if</code>-Conditional</h3>
+<p>The conditional <code>if</code> statement provides a simple way to do things depending on a condition:</p>
+<pre><code class="language-js">if(a &gt; 5) {
+  // This code is executed only when a &gt; 5.
+}
+</code></pre>
+<p>The code in the curly brackets is only executed when the condition in the round brackets is <code>true</code>. The condition must always be a <code>boolean</code> value.</p>
+<p>If the code should do an <em>either-or</em> semantic, you can add an else block:</p>
+<pre><code class="language-js">if(a &gt; 5) {
+  // This code is executed only when a &gt; 5.
+}
+else {
+  // This code is executed when a &lt;= 5. 
+}
+</code></pre>
+<p>The <code>else</code> part is optional.</p>
+<p><code>if</code> also provides a short-hand version if only a single statement is conditional:</p>
+<pre><code class="language-js">if(condition)
+  Statement(); // Function call, control flow or assignment
+ 
+if(condition)
+  Statement();
+else
+  Statement();
+</code></pre>
+<h3><code>while</code>-Loop</h3>
+<p>If a piece of code should repeat itself, a loop structure is helpful:</p>
+<pre><code class="language-js">while(a &gt; 5) {
+  // this code repeats as long as a &gt; 5.
+}
+</code></pre>
+<p>The <code>while</code> loop will check the condition in the round brackets. If the condition is <code>true</code>, the code in the curly brackets will be executed. After that, the condition will be checked again and the process starts again.</p>
+<h3><code>for</code>-Loop</h3>
+<p>Iterating over an array is such a common task that Lux provides a built-in loop for that:</p>
+<pre><code class="language-js">for(x in data) {
+  // For each loop iteration, x will contain a value from data
+}
+</code></pre>
+<p>The syntax for the loop is <code>for(var in data) { … }</code> where <code>var</code> is a new local variable, and <code>data</code> is an array value.</p>
+<p>The loop will execute one time for each item in <code>data</code>, filling <code>var</code> with the current item. The items are processed in order.</p>
+<h3>Function Calls</h3>
+<pre><code class="language-js">Print(&quot;Hello, World!&quot;); // Calls the function Print with one arg.
+x = GetSomething(); // stores the return value of GetSomething()
+</code></pre>
+<p>Function calls will execute a sub-program that may return a value to their caller. A function call may take zero or more arguments, but will always return a value. If the return value is not stored, it will be discarded.</p>
+<h3>Method Calls</h3>
+<p>Methods calls are similar to function calls, but require an <code>object</code> value to be executed:</p>
+<pre><code class="language-js">var obj = …; // We require a variable of type object
+
+obj.Print(&quot;Hello, World!&quot;); // Call the method Print on obj.
+</code></pre>
+<p>The <code>Print</code> in this case is not a usual function but a method. Methods are defined on objects and pass the object to the method as well.</p>
+<p>This allows the script runtime to provide the user with more complex data structures or interfaces that are implemented via objects instead of free functions.</p>
+<p>Objects can also represent resources like <a href="https://en.wikipedia.org/wiki/Network_socket">sockets</a> or <a href="https://en.wikipedia.org/wiki/Key-value_database">key-value-stores</a> that are available to the user.</p>
+<h3><code>return</code></h3>
+<p><code>return</code> will stop the execution of the current sub-program and will return control to the caller.</p>
+<pre><code class="language-js">return; // Stop execution now, return void
+return true; // Stop execution now and return true
+</code></pre>
+<p><code>return</code> may take an optional value that will be returned as a result of the sub-program.</p>
+<p>Returning a value from global execution environment is not allowed, returning a value to the script host should be done with a function provided by the host.</p>
+<h3><code>break</code></h3>
+<p><code>break</code> will cancel the current loop execution. This means that it will continue execution after the loop-block:</p>
+<pre><code class="language-js">var i = 0;
+var j = 0;
+while(true)
+{
+  i += 1;
+  Print(&quot;i = &quot;, i);
+  if(i &gt; 5)
+    break; // this will jump to after the while-loop 
+  j += 1;
+}
+// &lt;= break will continue execution here
+Print(i, j); // Will print 6, 5
+</code></pre>
+<p>The same goes for <code>for</code> loops:</p>
+<pre><code class="language-js">for(x in [ 1, 2, 3, 4 ])
+{
+  if(x &gt; 2)
+    break; // this will jump to after the for-loop 
+}
+// &lt;= break will continue execution here
+</code></pre>
+<h3><code>continue</code></h3>
+<p><code>continue</code> is the counterpart to <code>break</code>: It will continue with the next loop iteration instead of completing the current one. This can be used to skip a whole bunch of code:</p>
+<pre><code class="language-js">var a = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+var skipped = 0;
+for(x in a)
+{
+  // continue will continue from here
+  if(x &lt; 3) {
+    skipped += 1;
+    continue; // jumps to the start of the loop with the next var
+  }
+  Print(x);
+}
+Print(&quot;Skipped &quot;, skipped, &quot; elements!&quot;);
+</code></pre>
+<p>The same goes for <code>while</code> loops as well:</p>
+<pre><code class="language-js">var i = 0;
+while(i &lt; 10)
+{
+  // continue will continue from here
+  i += 1;
+  if(i &lt; 4)
+    continue; // jumps to the start of the loop
+  Print(i);
+}
+</code></pre>
+<h2>Functions</h2>
+<p>Functions allows the user to declare custom sub-programs in the script:</p>
+<pre><code class="language-js">function AddFive(a) {
+  return a + 5;
+}
+
+function Compare(a, b) {
+  if(a &gt; b) {
+    return &quot;larger&quot;;
+  }
+  else if(a &lt; b) {
+    return &quot;smaller&quot;;
+  } else {
+    return &quot;equal&quot;;
+  }
+}
+</code></pre>
+<p>Functions have their own scope, and may <code>return</code> a value to their caller.</p>
+<h2>Top Level Code</h2>
+<p>Similar to other scripting languages, Lux allows not only top-level declarations, but also top-level code. This means there is no <code>main</code> function that is called when starting execution, but the top-level code will be run instead.</p>
+<pre><code class="language-js">// This is not a snippet, but a valid file!
+SayHelloTo(&quot;me&quot;);
+
+function SayHelloTo(name)
+{
+  Print(&quot;Hello, &quot; + name + &quot;!&quot;);
+}
+</code></pre>
+<p>As you can see, the order of declaration is not relevant in Lux. Functions may be called from top-level before or after declaration.</p>
+<h2>Error Handling</h2>
+<p>The Lux language has not a very sophisticated error handling concept. If something goes wrong, the runtime will just panic and return execution to the host system with the position where the panic happened as well as some basic info about what failed.</p>
+<p>Possible panics are:</p>
+<ul>
+<li><code>OutOfMemory</code> (the host ran out of memory while executing the code)</li>
+<li><code>TypeMismatch</code> (an operation or function expected one type, but got another)</li>
+<li><code>IndexOutOfBounds</code> (an array was indexed outside the boundaries of the array)</li>
+<li><code>InvalidArgs</code> (a wrong number of arguments was passed to a function)</li>
+<li><code>OutOfRange</code> (a numeric value wasn't in the allowed range)</li>
+</ul>
+<p>A panic may be caused by the Lux virtual machine or any library functions.</p>
+<h2>Objects</h2>
+<p>Objects in Lux are opaque handles except for their methods. Users cannot declare or create objects without the help of the script host. Object handles are usually valid as long as the Lux script has access to that handle, but the script host might destroy objects actively as well.</p>
+<p>Object handles can be considered a reference type as you don't get a copy of the object when you pass a handle around. This type would be the only exception to the Lux design of <em>value types only</em>.</p>
+<h2>Lux File Types</h2>
+<p>The following list contains Lux-related file types</p>
+<ul>
+<li>Lux Code (<code>*.lux</code>)
+These files contain actual Lux source code and can be compiled into modules.</li>
+<li><a href="Modules.md">Lux Modules</a> (<code>*.lux.lm</code>)
+These files contain compiled Lux byte code and can be executed by a <a href="IR.md">Lux VM</a>.</li>
+</ul>
+<h2>Frequently Asked Questions</h2>
+<p>This section tries to answer questions that are commonly asked.</p>
+<h3>Why does the language not allow user-defined objects?</h3>
+<p>The design decision of Lux was to be a simple as possible without losing too much features. User-defined objects would make the language way more complex and harder to reason about code. As the focus group of the language is mostly programmer novices, this complexity was left out and passed to the script host.</p>
+<p>It is still possible to create user-defined objects and classes though: The script host might implement a function <code>MakeObject(str)</code> which compiles a Lux source and returns the compiled script as a object, evaluating the top-level code as some kind of constructor and exporting all functions as methods to that object.</p>
+<h2>List of Keywords</h2>
+<ul>
+<li><code>and</code></li>
+<li><code>break</code></li>
+<li><code>const</code></li>
+<li><code>continue</code></li>
+<li><code>else</code></li>
+<li><code>for</code></li>
+<li><code>function</code></li>
+<li><code>if</code></li>
+<li><code>in</code></li>
+<li><code>not</code></li>
+<li><code>or</code></li>
+<li><code>return</code></li>
+<li><code>var</code></li>
+<li><code>while</code></li>
+</ul>
+<h2>Wording</h2>
+<p>The following chapter explains some of the words used in this document with concrete focus on the meaning inside Lux.</p>
+<h3>Statement</h3>
+<p>A statement is something that can be written as a line of code or execution unit.</p>
+<p>The following constructs count as statements:</p>
+<ul>
+<li>Conditionals (<code>if</code>)</li>
+<li>Loops (<code>while</code>, <code>for</code>)</li>
+<li>Everything with a semicolon at the end (<code>a = …;</code>, <code>a[i] = …;</code>, <code>Print(&quot;Hi!&quot;);</code>)</li>
+</ul>
+<h3>Expression</h3>
+<p>An expression is something that yields a value that can be used in another expression or can be assigned to a value.</p>
+<p>Examples for expressions are:</p>
+<ul>
+<li><code>1</code></li>
+<li><code>&quot;Hello&quot;</code></li>
+<li><code>expr + expr</code></li>
+<li><code>SumOf(10, 20)</code></li>
+<li>…</li>
+</ul>
+<p>Lux does not allow lone statements except for function and method calls. These are special in a way that they may discard their value. The resulting value of all other expressions may not be discarded.</p>
+<h3>Block</h3>
+<p>Any piece of code between <code>{</code> and <code>}</code>. The block con</p>
+<h2>Examples</h2>
+<p>The following section will contain small examples on how to use the language.</p>
+<h3>Sum the values of an array</h3>
+<pre><code class="language-js">var a = [ 1, 2, 3 ];
+var sum = 0;
+for(v in a) {
+  sum += a;
+}
+Print(&quot;Sum = &quot;, sum);
+</code></pre>
+<h3>Bubble Sort</h3>
+<pre><code class="language-js">function BubbleSort(arr)
+{
+  var len = Length(arr);
+
+  var n = len;
+  while(n &gt; 1) {
+
+    var i = 0;
+    while(i &lt; n - 1) {
+      if (arr[i] &gt; arr[i+1]) {
+        var tmp = arr[i];
+        arr[i] = arr[i+1];
+        arr[i+1] = tmp;
+      }
+
+      i += 1;
+    }
+    n -= 1;
+  }
+
+  return arr;
+}
+
+Print(BubbleSort([ 7, 8, 9, 3, 2, 1 ]));
+</code></pre>
+<h3>Reversing an array</h3>
+<pre><code class="language-js">// Reverse an array
+function RevertArray(arr)
+{
+  var i = 0;
+  var l = Length(arr);
+  while(i &lt; l/2) {
+    var tmp = arr[i];
+    arr[i] = arr[l - i - 1];
+    arr[l - i - 1] = tmp;
+    i += 1;
+  }
+  return arr;
+}
+</code></pre>
+<h3>Using an object</h3>
+<pre><code class="language-js">var stack = CreateStack();
+
+stack.Push(10);
+stack.Push(20);
+stack.Push(30);
+
+function Operation(op)
+{
+  if(op == &quot;print&quot;) {
+    Print(stack.Pop());
+  }
+  if(op == &quot;add&quot;) {
+    var lhs = stack.Pop();
+    var rhs = stack.Pop();
+    stack.Push(lhs + rhs);
+  }
+  if(op == &quot;mul&quot;) {
+    var lhs = stack.Pop();
+    var rhs = stack.Pop();
+    stack.Push(lhs * rhs);
+  }
+}
+
+Operation(&quot;mul&quot;);
+Operation(&quot;add&quot;);
+Operation(&quot;print&quot;);
+
+Print(&quot;Stack Length: &quot;, stack.GetSize());
+</code></pre>
+        </section>
+      </div>
+      <div class="flex-filler"></div>
+    </div>
+  </div>
+</body>
+
+</html>

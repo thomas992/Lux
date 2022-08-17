@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lux Documentation</title>
+  <link rel="icon"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgklEQVR4AWMYWuD7EllJIM4G4g4g5oIJ/odhOJ8wToOxSTXgNxDHoeiBMfA4+wGShjyYOCkG/IGqWQziEzYAoUAeiF9D5U+DxEg14DRU7jWIT5IBIOdCxf+A+CQZAAoopEB7QJwBCBwHiip8UYmRdrAlDpIMgApwQZNnNii5Dq0MBgCxxycBnwEd+wAAAABJRU5ErkJggg==">
+  <link rel="stylesheet" href="../documentation.css" />
+</head>
+
+<body class="canvas">
+  <div class="flex-main">
+    <div class="flex-filler"></div>
+    <div class="flex-left sidebar">
+      <nav>
+        <div class="logo">
+          <img src="../img/logo.png" />
+        </div>
+        <div id="sectPkgs" class="">
+          <h2><span>Documents</span></h2>
+          <ul id="listPkgs" class="packages"><li><a href="language.htm" >Language Reference</a></li>
+<li><a href="standard-library.htm" >Standard Library</a></li>
+<li><a href="runtime-library.htm" >Runtime Library</a></li>
+<li><a href="intermediate-language.htm" >IR</a></li>
+<li><a href="module-binary.htm" class="active">Module Format</a></li>
+          </ul>
+        </div>
+        <div id="sectInfo" class="">
+          <h2><span>Lux Version</span></h2>
+          <p class="str" id="tdZigVer">v0.1-5-g72fda94</p>
+        </div>
+      </nav>
+    </div>
+    <div class="flex-right">
+      <div class="wrap">
+        <section class="docs"><h1>Lux Module Format</h1>
+<p>Native Lux has a binary module format that contains compiled intermediate code. This format both contains meta-data like function names, but also the compiled code.</p>
+<h2>Data Structure</h2>
+<p>The description uses a file notation similar to Zig syntax. Each segment of the file is described as a structure with fields. The fields are packed and don't have any padding bits. Each field is noted by name, colon, type, and an optional fixed value.</p>
+<p><code>u8</code>, <code>u16</code>, … denote a unsigned integer type with <em>n</em> bits, <code>[x]T</code> is an Array of <code>x</code> times <code>T</code> where <code>T</code> is a type and <code>x</code> is either a constant or variable size of a field declared earlier.</p>
+<p>Some fields are commented with C++ style comments, introduced by a <code>//</code>.</p>
+<pre><code class="language-rust">// Structure of the whole file
+File {
+  header: FileHeader,  // contains the module header
+  globalCount: u16,    // number of global script variables
+  temporaryCount: u16, // number of temporary variables (global)
+  functionCount: u16,  // number of declared functions
+  codeSize: u32,       // size of the intermediate code in bytes
+  numSymbols: u32,     // number of debug symbols
+  functions: [functionCount]Function, // contains the function meta data
+  code: [codeSize]u8, // intermediate code
+  debugSymbols: [numSymbols]DebugSymbol, // debug symbols
+}
+
+FileHeader {
+  identifier: [8]u8 = &quot;LoLa\xB9\x40\x80\x5A&quot;
+  version: u32 = 1,   // will increment in future versions
+  comment: [256]u8,   // zero terminated
+}
+
+Function {
+  name: [128]u8,   // zero-terminated function name
+  entryPoint: u32, // start of the function in the intermediate code
+  localCount: u16, // number of local variable slots.
+}
+
+DebugSymbol {
+  offset: u32,       // offset in code
+  sourceLine: u32,   // line of the original source
+  sourceColumn: u16, // 
+}
+</code></pre>
+        </section>
+      </div>
+      <div class="flex-filler"></div>
+    </div>
+  </div>
+</body>
+
+</html>

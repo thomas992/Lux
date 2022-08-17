@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lux Documentation</title>
+  <link rel="icon"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAgklEQVR4AWMYWuD7EllJIM4G4g4g5oIJ/odhOJ8wToOxSTXgNxDHoeiBMfA4+wGShjyYOCkG/IGqWQziEzYAoUAeiF9D5U+DxEg14DRU7jWIT5IBIOdCxf+A+CQZAAoopEB7QJwBCBwHiip8UYmRdrAlDpIMgApwQZNnNii5Dq0MBgCxxycBnwEd+wAAAABJRU5ErkJggg==">
+  <link rel="stylesheet" href="../documentation.css" />
+</head>
+
+<body class="canvas">
+  <div class="flex-main">
+    <div class="flex-filler"></div>
+    <div class="flex-left sidebar">
+      <nav>
+        <div class="logo">
+          <img src="../img/logo.png" />
+        </div>
+        <div id="sectPkgs" class="">
+          <h2><span>Documents</span></h2>
+          <ul id="listPkgs" class="packages"><li><a href="language.htm" >Language Reference</a></li>
+<li><a href="standard-library.htm" class="active">Standard Library</a></li>
+<li><a href="runtime-library.htm" >Runtime Library</a></li>
+<li><a href="intermediate-language.htm" >IR</a></li>
+<li><a href="module-binary.htm" >Module Format</a></li>
+          </ul>
+        </div>
+        <div id="sectInfo" class="">
+          <h2><span>Lux Version</span></h2>
+          <p class="str" id="tdZigVer">v0.1-5-g72fda94</p>
+        </div>
+      </nav>
+    </div>
+    <div class="flex-right">
+      <div class="wrap">
+        <section class="docs"><h1>Lux Standard Library</h1>
+<p>This file documents the Lux Standard Library, a set of basic routines to enable Lux programs.</p>
+<h2>String API</h2>
+<h3><code>Length(string): number</code></h3>
+<p>Returns the length of the string.</p>
+<h3><code>SubString(string, start, [length]): string</code></h3>
+<p>Returns a portion of <code>string</code>. The portion starts at <code>start</code> and is <code>length</code> bytes long. If <code>length</code> is not given, only the start of the string is cut.</p>
+<h3><code>Trim(string): string</code></h3>
+<p>Removes leading and trailing white space from the string. White space is on of the following ascii characters:</p>
+<ul>
+<li><code>0x09</code> (horizontal tab)</li>
+<li><code>0x0A</code> (line feed)</li>
+<li><code>0x0B</code> (vertical tab)</li>
+<li><code>0x0C</code> (form feed)</li>
+<li><code>0x0D</code> (carriage return)</li>
+<li><code>0x20</code> (space)</li>
+</ul>
+<h3><code>TrimLeft(string): string</code></h3>
+<p>Removes leading white space from the string.</p>
+<h3><code>TrimRight(string): string</code></h3>
+<p>Removes trailing white space from the string.</p>
+<h3><code>IndexOf(string, text): number|void</code></h3>
+<p>Searches for the first occurrence <code>text</code> in <code>string</code>, returns the offset to the start in bytes. If <code>text</code> is not found, <code>void</code> is returned.</p>
+<h3><code>LastIndexOf(string, text): number|void</code></h3>
+<p>Searches for the last occurrence of <code>text</code> in <code>string</code>, returns the offset to the start in bytes. If <code>text</code> is not found, <code>void</code> is returned.</p>
+<h3><code>Byte(string): number</code></h3>
+<p>Returns the first byte of the string as a number value. If the string is empty, <code>void</code> is returned, if the string contains more than one byte, still only the first byte is considered.</p>
+<h3><code>Chr(byte): string</code></h3>
+<p>Returns a string of the length 1 containing <code>byte</code> as a byte value.</p>
+<h3><code>NumToString(num, [base]=10): string</code></h3>
+<p>Converts the number <code>num</code> into a string represenation to base <code>base</code>. If <code>base</code> is given, it will format the integer value of the number to <code>base</code>, otherwise, a decimal floating point output will be given.</p>
+<h3><code>StringToNum(str, [base]=10): number|void</code></h3>
+<p>Converts the string <code>str</code> to a number. If <code>base</code> is not given, the number is assumed to be base 10 and a floating point value. Otherwise, <code>base</code> is used as the numeric base for conversion, and only integer values are accepted.</p>
+<p>If the conversion fails, <code>void</code> is returned.</p>
+<p>If <code>base</code> is 16, <code>0x</code> is accepted as a prefix, and <code>h</code> as a postfix.</p>
+<h3><code>Split(str, sep, [removeEmpty]): array</code></h3>
+<p>Splits the string <code>str</code> into chunks separated by <code>sep</code>. When <code>removeEmpty</code> is given and <code>true</code>, all empty entries will be removed.</p>
+<h3><code>Join(array, [sep]): string</code></h3>
+<p>Joins all items in <code>array</code>, optionally separated by <code>sep</code>. Each item in <code>array</code> must be a <code>string</code>.</p>
+<h2>Array API</h2>
+<h3><code>Array(count, [init]): array</code></h3>
+<p>Returns an array with <code>count</code> items initialized with <code>init</code> if given. Otherwise, the array will be filled with <code>void</code>.</p>
+<h3><code>Range(count): array</code></h3>
+<p>Returns an array with <code>count</code> increasing numbers starting at 0.</p>
+<h3><code>Range(start, count)</code></h3>
+<p>Returns an array with <code>count</code> increasing numbers starting at <code>start</code>.</p>
+<h3><code>Length(array): number</code></h3>
+<p>Returns the number of items in <code>array</code>.</p>
+<h3><code>Slice(array, start, length): array</code></h3>
+<p>Returns a portion of the <code>array</code>, starting at <code>index</code> (inclusive) and taking up to <code>length</code> items from the array. If less items are possible, an empty array is returned.</p>
+<h3><code>IndexOf(array, item): number|void</code></h3>
+<p>Returns the index of a given <code>item</code> in <code>array</code>. If the item is not found, <code>void</code> is returned.</p>
+<h3><code>LastIndexOf(array, item): number|void</code></h3>
+<p>Returns the last index of a given <code>item</code> in <code>array</code>. If the item is not found, <code>void</code> is returned.</p>
+<h2>Math</h2>
+<h3><code>Pi: number</code></h3>
+<p>Global constant containing the number <em>pi</em>.</p>
+<h3><code>DeltaEqual(a, b, delta): boolean</code></h3>
+<p>Compares <code>a</code> and <code>b</code> with a certain <code>delta</code>. Returns <code>true</code> when <code>abs(a-b) &lt; delta</code>.</p>
+<h3>``Floor(x): number`</h3>
+<p>Rounds <code>x</code> towards negative infinity.</p>
+<h3>``Ceiling(x): number`</h3>
+<p>Rounds <code>x</code> towards positive infinity.</p>
+<h3>``Round(x): number`</h3>
+<p>Rounds <code>x</code> to the closest integer.</p>
+<h3><code>Sin(a): number</code>, <code>Cos(a): number</code>, <code>Tan(a): number</code></h3>
+<p>Trigonometric functions, all use radians.</p>
+<h3><code>Atan(y, [x]): number</code></h3>
+<p>Calculates the arcus tangens of <code>y</code>, and, if <code>x</code> is given, divides <code>y</code> by <code>x</code> before.</p>
+<p>Use the two-parameter version for higher precision.</p>
+<h3><code>Sqrt(x): number</code></h3>
+<p>Calculates the square root of <code>x</code>.</p>
+<h3><code>Pow(v, e): number</code></h3>
+<p>Returns <code>v</code> to the power of <code>e</code>.</p>
+<h3><code>Log(v, [base]): number</code></h3>
+<p>Returns the logarithm of <code>v</code> to base <code>base</code>. If <code>base</code> is not given, base 10 is used.</p>
+<h3><code>Exp(v): number</code></h3>
+<p>Returns <em>e</em> to the power of <code>v</code>. <em>e</em> is the euler number.</p>
+<h3><code>Random([min],[max]): number</code></h3>
+<p>Returns a random number between <code>min</code> and <code>max</code>. If no argument is given, a random number between <code>0.0</code> and <code>1.0</code> is returned. If only <code>min</code> is given, a number between <code>0.0</code> and <code>min</code> (inclusive) is returned.</p>
+<h3><code>RandomInt([min],[max]): number</code></h3>
+<p>Returns a random integer between <code>min</code> and <code>max</code>. If no argument is given, a random positive number is returned. If only <code>min</code> is given, a number between <code>0</code> and <code>min</code> (exclusive) is returned.</p>
+<h2>Auxiliary</h2>
+<h3><code>Sleep(secs): void</code></h3>
+<p>Sleeps for <code>secs</code> seconds.</p>
+<h3><code>Timestamp(): number</code></h3>
+<p>Returns the current wall clock time as a unix timestamp.</p>
+<h3><code>TypeOf(arg): string</code></h3>
+<p>Returns the type of the argument as a string. Returns one of the following:</p>
+<pre><code class="language-lux">&quot;void&quot;, &quot;boolean&quot;, &quot;string&quot;, &quot;number&quot;, &quot;object&quot;, &quot;array&quot;
+</code></pre>
+<h3><code>ToString(val): string</code></h3>
+<p>Converts the input <code>val</code> into a string representation.</p>
+<h3><code>HasFunction(name): boolean</code></h3>
+<p>Returns <code>true</code> if the current environment has a function called <code>name</code>, <code>false</code> otherwise.</p>
+<h3><code>HasFunction(object, name): boolean</code></h3>
+<p>Returns <code>true</code> if the <code>object</code> has a function called <code>name</code>, <code>false</code> otherwise.</p>
+<h3><code>Serialize(value): string</code></h3>
+<p>Serializes any <code>value</code> into a binary representation. This representation can later be loaded by via <code>Deserialize</code> and return the exact same value again. Note that objects are stored as opaque handles and are not transferrable between different systems.</p>
+<h3><code>Deserialize(string): any</code></h3>
+<p>Deserializes a previously serialized value. If the deserialization fails, a panic will occurr.</p>
+<h3><code>Yield(): void</code></h3>
+<p>This function will yield control back to the host, pausing the current execution. This can be inserted in loops to reduce CPU usage.</p>
+        </section>
+      </div>
+      <div class="flex-filler"></div>
+    </div>
+  </div>
+</body>
+
+</html>
