@@ -1,8 +1,8 @@
-# LoLa Programming Language
+# Lux Programming Language
 
-![LoLa Logo](design/logo.png)
+![Lux Logo](design/logo.png)
 
-LoLa is a small programming language meant to be embedded into games to be programmed by the players. The compiler and runtime are implemented in Zig and C++.
+Lux is a small programming language meant to be embedded into games to be programmed by the players. The compiler and runtime are implemented in Zig and C++.
 
 ## Short Example
 ```js
@@ -14,8 +14,8 @@ for(text in list) {
 
 You can find more examples in the [examples](examples/lola) folder.
 
-## Why LoLa when there is *X*?
-LoLa isn't meant to be your next best day-to-day scripting language. Its design is focused on embedding the language in environments where the users want/need/should write some small scripts like games or scriptable applications. In most script languages, you as a script host don't have control over the execution time of the scripts you're executing. LoLa protects you against programming errors like endless loops and such:
+## Why Lux when there is *X*?
+Lux isn't meant to be your next best day-to-day scripting language. Its design is focused on embedding the language in environments where the users want/need/should write some small scripts like games or scriptable applications. In most script languages, you as a script host don't have control over the execution time of the scripts you're executing. Lux protects you against programming errors like endless loops and such:
 
 ### Controlled Execution Environment
 
@@ -34,7 +34,7 @@ while(true) {
 
 ### Native Asynchronous Design
 
-LoLa features both synchronous and asynchronous host functions. Synchronous host function calls are short-lived and will be executed in-place. Asynchronous functions, in contrast, will be executed multiple times until they yield a value. When they don't yield a value, control will be returned to the script host.
+Lux features both synchronous and asynchronous host functions. Synchronous host function calls are short-lived and will be executed in-place. Asynchronous functions, in contrast, will be executed multiple times until they yield a value. When they don't yield a value, control will be returned to the script host.
 
 This script will not exhaust the instruction limit, but will only increment the counter, then return control back to the host:
 ```js
@@ -59,7 +59,7 @@ while(true) {
 
 ### Native "RPC" Design
 
-LoLa also allows executing multiple scripts on the same *environment*, meaning that you can easily create cross-script communications:
+Lux also allows executing multiple scripts on the same *environment*, meaning that you can easily create cross-script communications:
 
 ```js
 // script a:
@@ -80,7 +80,7 @@ Print("Buffer contains: ", buffer.Get());
 
 With a fitting network stack and library, this can even be utilized cross-computer.
 
-This example implements a small chat client and server that could work with LoLa RPC capabilities:
+This example implements a small chat client and server that could work with Lux RPC capabilities:
 ```js
 // Chat client implementation:
 var server = Connect("lola-rpc://random-projects.net/chat");
@@ -139,13 +139,13 @@ function GetMessages(user)
 
 ### Serializable State
 
-As LoLa has no reference semantics except for objects, it is easy to understand and learn. It is also simple in its implementation and does not require a complex garbage collector or advanced programming knowledge. Each LoLa value can be serialized/deserialized into a sequence of bytes (only exception are object handles, those require some special attention), so saving the current state of a environment/vm to disk and loading it at a later point is a first-class supported use case.
+As Lux has no reference semantics except for objects, it is easy to understand and learn. It is also simple in its implementation and does not require a complex garbage collector or advanced programming knowledge. Each Lux value can be serialized/deserialized into a sequence of bytes (only exception are object handles, those require some special attention), so saving the current state of a environment/vm to disk and loading it at a later point is a first-class supported use case.
 
 This is especially useful for games where it is favourable to save your script state into a save game as well without having any drawbacks.
 
 ### Simple Error Handling
 
-LoLa provides little to no in-language error handling, as it's not designed to be robust against user programming errors. Each error is passed to the host as a panic, so it can show the user that there was an error (like `OutOfMemory` or `TypeMismatch`).
+Lux provides little to no in-language error handling, as it's not designed to be robust against user programming errors. Each error is passed to the host as a panic, so it can show the user that there was an error (like `OutOfMemory` or `TypeMismatch`).
 
 In-language error handling is based on the dynamic typing: Functions that allow in-language error handling just return `void` instead of a actual return value or `true`/`false` for *success* or *failure*. 
 
@@ -157,11 +157,11 @@ if(string != void) {
 }
 ```
 
-This design decision was made with the idea in mind that most LoLa programmers won't write the next best security critical software, but just do a quick hack in game to reach their next item unlock.
+This design decision was made with the idea in mind that most Lux programmers won't write the next best security critical software, but just do a quick hack in game to reach their next item unlock.
 
 ### Smart compiler
 
-As LoLa isn't the most complex language, the compiler can support the programmer. Even though the language has fully dynamic typing, the compiler can do some type checking at compile time already:
+As Lux isn't the most complex language, the compiler can support the programmer. Even though the language has fully dynamic typing, the compiler can do some type checking at compile time already:
 
 ```js
 // warning: Possible type mismatch detected: Expected number|string|array, found boolean
@@ -174,33 +174,16 @@ Note that this is a fairly new feature, it does not catch all your type mismatch
 
 ## Starting Points
 
-To get familiar with LoLa, you can check out these starting points:
+To get familiar with Lux, you can check out these starting points:
 
 - [Documentation](documentation/README.md)
-- [LoLa Examples](examples/lola/README.md)
+- [Lux Examples](examples/lola/README.md)
 - [Script Host Examples](examples/host)
-
-When you want to contribute to the compiler, check out the following documents:
-
-- [Source Code](src/)
-- [Bison Grammar](src/library/compiler/grammar.yy)
-- [Flex Tokenizer](src/library/compiler/yy.l)
-- [Issue List](https://github.com/MasterQ32/LoLa/issues)
 
 ## Visual Studio Code Extension
 If you want syntax highlighting in VSCode, you can install the [`lola-vscode`](https://github.com/MasterQ32/lola-vscode) extension.
 
-Right now, it's not published in the gallery, so to install the extension, you have to sideload it. [See the VSCode documentation for this](https://vscode-docs.readthedocs.io/en/stable/extensions/install-extension/).
-
-## Building
-
-### Continous Integration
-
-[![Build](https://github.com/MasterQ32/LoLa/actions/workflows/build.yml/badge.svg)](https://github.com/MasterQ32/LoLa/actions/workflows/build.yml) [![Render Website](https://github.com/MasterQ32/LoLa/actions/workflows/website.yml/badge.svg)](https://github.com/MasterQ32/LoLa/actions/workflows/website.yml)
-
-### Requirements
-
-- The [Zig Compiler](https://ziglang.org/) (Version 0.6.0+12ce6eb8f or newer)
+Right now, it's not published in the gallery, so to install the extension, you have to sideload it. [See the VSCode documentation for this](https://vscode-docs.readthedocs.io/en/stable/extensions/install-
 
 ### Building
 
