@@ -1,8 +1,8 @@
-# LoLa Examples
+# Lux Examples
 
-- [Hello World](hello-world.lola)
-- [Iterative Fibonacci Numbers](fib-iterative.lola)
-- [Summing up an array](sum-of-array.lola)
-- [Reverse Array](reverse-array.lola)
-- [Bubble Sort](bubble-sort.lola)
-- [Global Variable Usage](global-setter.lola)
+- [Hello World](hello-world.lux)
+- [Iterative Fibonacci Numbers](fib-iterative.lux)
+- [Summing up an array](sum-of-array.lux)
+- [Reverse Array](reverse-array.lux)
+- [Bubble Sort](bubble-sort.lux)
+- [Global Variable Usage](global-setter.lux)
