@@ -212,7 +212,7 @@ The website generator is gated behind `-Denable-website` which removes a lot of 
 If you still want to update/change the website or documentation, use the following command:
 
 ```sh
-zig build -Denable-website "-Dversion=$(git describe --tags || git rev-parse --short HEAD)" website
+zig build
 ```
 
 It will depend on [koino](https://github.com/kivikakk/koino), which is included as a git submodule. Adding new pages to the documentation is done by modifying the `menu_items` array in `src/tools/render-md-page.zig`.
