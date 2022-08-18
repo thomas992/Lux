@@ -1,6 +1,6 @@
 # Lux Programming Language
 
-![Lux Logo](design/logo.png)
+![Lux Logo](website/img/lux.png)
 
 Lux is a small programming language meant to be embedded into games to be programmed by the players. The compiler and runtime are implemented in Zig and C++.
 
