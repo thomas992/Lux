@@ -11,27 +11,27 @@ const MenuItem = struct {
 
 const menu_items = [_]MenuItem{
     MenuItem{
-        .input_file_name = "documentation/README.md",
+        .input_file_name = "docs/README.md",
         .output_file_name = "website/docs/language.htm",
         .header = "Language Reference",
     },
     MenuItem{
-        .input_file_name = "documentation/standard-library.md",
+        .input_file_name = "docs/standard-library.md",
         .output_file_name = "website/docs/standard-library.htm",
         .header = "Standard Library",
     },
     MenuItem{
-        .input_file_name = "documentation/runtime-library.md",
+        .input_file_name = "docs/runtime-library.md",
         .output_file_name = "website/docs/runtime-library.htm",
         .header = "Runtime Library",
     },
     MenuItem{
-        .input_file_name = "documentation/ir.md",
+        .input_file_name = "docs/ir.md",
         .output_file_name = "website/docs/intermediate-language.htm",
         .header = "IR",
     },
     MenuItem{
-        .input_file_name = "documentation/modules.md",
+        .input_file_name = "docs/modules.md",
         .output_file_name = "website/docs/module-binary.htm",
         .header = "Module Format",
     },

@@ -181,7 +181,7 @@ To get familiar with Lux, you can check out these starting points:
 - [Script Host Examples](examples/host)
 
 ## Visual Studio Code Extension
-If you want syntax highlighting in VSCode, you can install the [`lux-vscode`](https://github.com/tomhansen992/lux-vscode) extension.
+If you want syntax highlighting in VSCode, you can install the [`lux-vscode`](https://github.com/thomas992/lux-vscode) extension.
 
 Right now, it's not published in the gallery, so to install the extension, you have to sideload it. [See the VSCode documentation for this](https://vscode-docs.readthedocs.io/en/stable/extensions/install-
 
