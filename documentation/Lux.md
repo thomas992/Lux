@@ -1,4 +1,4 @@
-# LoLa – Quick Reference
+# Lux – Quick Reference
 
 ## Example
 

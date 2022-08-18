@@ -1,4 +1,4 @@
-// same as function-call.lola, but tests reduced copies on function calls
+// same as function-call.lux, but tests reduced copies on function calls
 
 function Foo(a, b, c) {
   Bar(a, b, c);

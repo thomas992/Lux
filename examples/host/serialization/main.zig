@@ -1,5 +1,5 @@
 const std = @import("std");
-const lola = @import("lola");
+const lux = @import("lux");
 
 ////
 // Serialization API example:
@@ -15,9 +15,9 @@ const example_source =
     \\}
 ;
 
-pub const ObjectPool = lola.runtime.ObjectPool([_]type{
-    lola.libs.runtime.LoLaDictionary,
-    lola.libs.runtime.LoLaList,
+pub const ObjectPool = lux.runtime.ObjectPool([_]type{
+    lux.libs.runtime.LuxDictionary,
+    lux.libs.runtime.LuxList,
 });
 
 pub fn main() anyerror!void {
@@ -54,7 +54,7 @@ pub fn main() anyerror!void {
 }
 
 fn run_serialization(allocator: std.mem.Allocator, serialization_buffer: []u8) !void {
-    var diagnostics = lola.compiler.Diagnostics.init(allocator);
+    var diagnostics = lux.compiler.Diagnostics.init(allocator);
     defer {
         for (diagnostics.messages.items) |msg| {
             std.debug.print("{}\n", .{msg});
@@ -62,19 +62,19 @@ fn run_serialization(allocator: std.mem.Allocator, serialization_buffer: []u8) !
         diagnostics.deinit();
     }
 
-    var compile_unit = (try lola.compiler.compile(allocator, &diagnostics, "example_source", example_source)) orelse return error.FailedToCompile;
+    var compile_unit = (try lux.compiler.compile(allocator, &diagnostics, "example_source", example_source)) orelse return error.FailedToCompile;
     defer compile_unit.deinit();
 
     var pool = ObjectPool.init(allocator);
     defer pool.deinit();
 
-    var env = try lola.runtime.Environment.init(allocator, &compile_unit, pool.interface());
+    var env = try lux.runtime.Environment.init(allocator, &compile_unit, pool.interface());
     defer env.deinit();
 
-    try env.installModule(lola.libs.std, lola.runtime.Context.null_pointer);
-    try env.installModule(lola.libs.runtime, lola.runtime.Context.null_pointer);
+    try env.installModule(lux.libs.std, lux.runtime.Context.null_pointer);
+    try env.installModule(lux.libs.runtime, lux.runtime.Context.null_pointer);
 
-    var vm = try lola.runtime.VM.init(allocator, &env);
+    var vm = try lux.runtime.VM.init(allocator, &env);
     defer vm.deinit();
 
     var result = try vm.execute(405);
@@ -97,7 +97,7 @@ fn run_serialization(allocator: std.mem.Allocator, serialization_buffer: []u8) !
         // this saves all global variables saved in the environment
         try env.serialize(writer);
 
-        var registry = lola.runtime.EnvironmentMap.init(allocator);
+        var registry = lux.runtime.EnvironmentMap.init(allocator);
         defer registry.deinit();
 
         try registry.add(1234, &env);
@@ -117,15 +117,15 @@ fn run_deserialization(allocator: std.mem.Allocator, serialization_buffer: []u8)
 
     // Trivial deserialization:
     // Just load the compile unit from disk again
-    var compile_unit = try lola.CompileUnit.loadFromStream(allocator, reader);
+    var compile_unit = try lux.CompileUnit.loadFromStream(allocator, reader);
     defer compile_unit.deinit();
 
-    // This is the reason we need to specialize lola.runtime.ObjectPool() on
+    // This is the reason we need to specialize lux.runtime.ObjectPool() on
     // a type list:
     // We need a way to do generic deserialization (arbitrary types) and it requires
     // a way to get a runtime type-handle and turn it back into a deserialization function.
     // this is done by storing the type indices per created object which can then be turned back
-    // into a real lola.runtime.Object.
+    // into a real lux.runtime.Object.
     var object_pool = try ObjectPool.deserialize(allocator, reader);
     defer object_pool.deinit();
 
@@ -134,12 +134,12 @@ fn run_deserialization(allocator: std.mem.Allocator, serialization_buffer: []u8)
     // Both of these things cannot be done by a pure stream serialization.
     // Thus, we need to restore the constant part of the environment by hand and
     // install all functions as well:
-    var env = try lola.runtime.Environment.init(allocator, &compile_unit, object_pool.interface());
+    var env = try lux.runtime.Environment.init(allocator, &compile_unit, object_pool.interface());
     defer env.deinit();
 
     // Installs the functions back into the environment.
-    try env.installModule(lola.libs.std, lola.runtime.Context.null_pointer);
-    try env.installModule(lola.libs.runtime, lola.runtime.Context.null_pointer);
+    try env.installModule(lux.libs.std, lux.runtime.Context.null_pointer);
+    try env.installModule(lux.libs.runtime, lux.runtime.Context.null_pointer);
 
     // This will restore the whole environment state back to how it was at serialization
     // time. All globals will be restored here.
@@ -148,7 +148,7 @@ fn run_deserialization(allocator: std.mem.Allocator, serialization_buffer: []u8)
     // This is needed for deserialization:
     // We need means to have a unique Environment <-> ID mapping
     // which is persistent over the serialization process.
-    var registry = lola.runtime.EnvironmentMap.init(allocator);
+    var registry = lux.runtime.EnvironmentMap.init(allocator);
     defer registry.deinit();
 
     // Here we need to add all environments that were previously serialized with
@@ -156,7 +156,7 @@ fn run_deserialization(allocator: std.mem.Allocator, serialization_buffer: []u8)
     try registry.add(1234, &env);
 
     // Restore the virtual machine with all function calls.
-    var vm = try lola.runtime.VM.deserialize(allocator, &registry, reader);
+    var vm = try lux.runtime.VM.deserialize(allocator, &registry, reader);
     defer vm.deinit();
 
     var stdout = std.io.getStdOut().writer();

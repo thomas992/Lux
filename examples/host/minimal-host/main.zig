@@ -1,9 +1,9 @@
 const std = @import("std");
-const lola = @import("lola");
+const lux = @import("lux");
 
 ////
 // Minimal API example:
-// This example shows how to get started with the LoLa library.
+// This example shows how to get started with the Lux library.
 // Compiles and runs the Hello-World program.
 //
 
@@ -14,9 +14,9 @@ const example_source =
 
 // This is required for the runtime library to be able to provide
 // object implementations.
-pub const ObjectPool = lola.runtime.ObjectPool([_]type{
-    lola.libs.runtime.LoLaDictionary,
-    lola.libs.runtime.LoLaList,
+pub const ObjectPool = lux.runtime.ObjectPool([_]type{
+    lux.libs.runtime.LuxDictionary,
+    lux.libs.runtime.LuxList,
 });
 
 pub fn main() anyerror!u8 {
@@ -29,7 +29,7 @@ pub fn main() anyerror!u8 {
 
     // This stores the error messages and warnings, we
     // just keep it and print all messages on exit (if any).
-    var diagnostics = lola.compiler.Diagnostics.init(allocator);
+    var diagnostics = lux.compiler.Diagnostics.init(allocator);
     defer {
         for (diagnostics.messages.items) |msg| {
             std.debug.print("{}\n", .{msg});
@@ -38,36 +38,36 @@ pub fn main() anyerror!u8 {
     }
 
     // This compiles a piece of source code into a compile unit.
-    // A compile unit is a piece of LoLa IR code with metadata for
+    // A compile unit is a piece of Lux IR code with metadata for
     // all existing functions, debug symbols and so on. It can be loaded into
     // a environment and be executed.
-    var compile_unit = (try lola.compiler.compile(allocator, &diagnostics, "example_source", example_source)) orelse {
+    var compile_unit = (try lux.compiler.compile(allocator, &diagnostics, "example_source", example_source)) orelse {
         std.debug.print("failed to compile example_source!\n", .{});
         return 1;
     };
     defer compile_unit.deinit();
 
     // A object pool is required for garabge collecting object handles
-    // stored in several LoLa environments and virtual machines.
+    // stored in several Lux environments and virtual machines.
     var pool = ObjectPool.init(allocator);
     defer pool.deinit();
 
     // A environment stores global variables and provides functions
-    // to the virtual machines. It is also a possible LoLa object that
+    // to the virtual machines. It is also a possible Lux object that
     // can be passed into virtual machines.
-    var env = try lola.runtime.Environment.init(allocator, &compile_unit, pool.interface());
+    var env = try lux.runtime.Environment.init(allocator, &compile_unit, pool.interface());
     defer env.deinit();
 
     // Install both standard and runtime library into
     // our environment. You can see how to implement custom
     // functions if you check out the implementation of both
     // libraries!
-    try env.installModule(lola.libs.std, lola.runtime.Context.null_pointer);
-    try env.installModule(lola.libs.runtime, lola.runtime.Context.null_pointer);
+    try env.installModule(lux.libs.std, lux.runtime.Context.null_pointer);
+    try env.installModule(lux.libs.runtime, lux.runtime.Context.null_pointer);
 
-    // Create a virtual machine that is used to execute LoLa bytecode.
+    // Create a virtual machine that is used to execute Lux bytecode.
     // Using `.init` will always run the top-level code.
-    var vm = try lola.runtime.VM.init(allocator, &env);
+    var vm = try lux.runtime.VM.init(allocator, &env);
     defer vm.deinit();
 
     // The main interpreter loop:
@@ -76,7 +76,7 @@ pub fn main() anyerror!u8 {
         // Run the virtual machine for up to 150 instructions
         var result = vm.execute(150) catch |err| {
             // When the virtua machine panics, we receive a Zig error
-            std.debug.print("LoLa panic: {s}\n", .{@errorName(err)});
+            std.debug.print("Lux panic: {s}\n", .{@errorName(err)});
             return 1;
         };
 

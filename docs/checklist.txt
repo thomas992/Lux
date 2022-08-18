@@ -1,6 +1,6 @@
 Programming Language Checklist
 by Colin McMillen, Jason Reed, and Elly Fong-Jones, 2011-10-10.
-Filled out for LoLa
+Filled out for Lux
 
 You appear to be advocating a new:
 [ ] functional  [X] imperative  [X] object-oriented  [X] procedural [ ] stack-based

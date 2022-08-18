@@ -25,7 +25,7 @@ File {
 }
 
 FileHeader {
-  identifier: [8]u8 = "LoLa\xB9\x40\x80\x5A"
+  identifier: [8]u8 = "Lux\xB9\x40\x80\x5A"
   version: u32 = 1,   // will increment in future versions
   comment: [256]u8,   // zero terminated
 }

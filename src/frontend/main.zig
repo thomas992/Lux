@@ -44,7 +44,7 @@ pub fn main() !u8 {
 
 pub fn print_usage() !void {
     const usage_msg =
-        \\Usage: lola [command] [options]
+        \\Usage: lux [command] [options]
         \\
         \\Commands:
         \\  compile [source]                   Compiles the given source file into a module.
